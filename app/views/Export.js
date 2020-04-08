@@ -18,20 +18,20 @@ import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 // import colors from '../constants/colors';
+import LinearGradient from 'react-native-linear-gradient';
+import { SvgXml } from 'react-native-svg';
 import fontFamily from '../constants/fonts';
 import { GetStoreData } from '../helpers/General';
 import { timeSincePoint } from '../helpers/convertPointsToString';
 import LocationServices, { LocationData } from '../services/LocationService';
-import backArrow from './../assets/images/backArrow.png';
-import { isPlatformiOS } from './../Util';
-import LinearGradient from 'react-native-linear-gradient';
+import backArrow from '../assets/images/backArrow.png';
+import { isPlatformiOS } from '../Util';
 
 import Colors from '../constants/colors';
-import languages from './../locales/languages';
-import licenses from './../assets/LICENSE.json';
-import { SvgXml } from 'react-native-svg';
-import close from './../assets/svgs/close';
-import exportIcon from './../assets/svgs/export';
+import languages from '../locales/languages';
+import licenses from '../assets/LICENSE.json';
+import close from '../assets/svgs/close';
+import exportIcon from '../assets/svgs/export';
 
 const width = Dimensions.get('window').width;
 const base64 = RNFetchBlob.base64;
@@ -50,12 +50,12 @@ function ExportScreen(props) {
   useFocusEffect(
     React.useCallback(() => {
       const locationData = new LocationData();
-      locationData.getPointStats().then(pointStats => {
+      locationData.getPointStats().then((pointStats) => {
         setPointStats(pointStats);
         setButtonDisabled(pointStats.pointCount === 0);
       });
       return () => {};
-    }, []),
+    }, [])
   );
 
   useEffect(() => {
@@ -72,19 +72,19 @@ function ExportScreen(props) {
 
   async function onShare() {
     try {
-      let locationData = await new LocationData().getLocationData();
-      let nowUTC = new Date().toISOString();
-      let unixtimeUTC = Date.parse(nowUTC);
+      const locationData = await new LocationData().getLocationData();
+      const nowUTC = new Date().toISOString();
+      const unixtimeUTC = Date.parse(nowUTC);
 
-      var options = {};
-      var jsonData = JSON.stringify(locationData);
+      let options = {};
+      let jsonData = JSON.stringify(locationData);
       const title = 'PrivateKit.json';
-      const filename = unixtimeUTC + '.json';
+      const filename = `${unixtimeUTC}.json`;
       const message = 'Here is my location log from Private Kit.';
       if (isPlatformiOS()) {
-        var url = RNFS.DocumentDirectoryPath + '/' + filename;
+        var url = `${RNFS.DocumentDirectoryPath}/${filename}`;
         await RNFS.writeFile(url, jsonData, 'utf8')
-          .then(success => {
+          .then((success) => {
             options = {
               activityItemSources: [
                 {
@@ -100,24 +100,24 @@ function ExportScreen(props) {
               ],
             };
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err.message);
           });
       } else {
-        jsonData = 'data:application/json;base64,' + base64.encode(jsonData);
+        jsonData = `data:application/json;base64,${base64.encode(jsonData)}`;
         options = {
           title,
           subject: title,
           url: jsonData,
-          message: message,
-          filename: filename,
+          message,
+          filename,
         };
       }
       await Share.open(options)
-        .then(res => {
+        .then((res) => {
           console.log(res);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           console.log(err.message, err.code);
         });
@@ -144,9 +144,7 @@ function ExportScreen(props) {
           colors={[Colors.VIOLET_BUTTON, Colors.VIOLET_BUTTON_DARK]}
           style={{ flex: 1, height: '100%' }}>
           <View style={styles.headerContainer}>
-            <TouchableOpacity
-              style={styles.backArrowTouchable}
-              onPress={() => backToMain()}>
+            <TouchableOpacity style={styles.backArrowTouchable} onPress={() => backToMain()}>
               <SvgXml style={styles.backArrow} xml={close} />
             </TouchableOpacity>
           </View>
@@ -156,12 +154,8 @@ function ExportScreen(props) {
               <Text style={styles.exportSectionTitles}>
                 {languages.t('label.tested_positive_title')}
               </Text>
-              <Text style={styles.exportSectionPara}>
-                {languages.t('label.export_para_1')}
-              </Text>
-              <Text style={styles.exportSectionPara}>
-                {languages.t('label.export_para_2')}
-              </Text>
+              <Text style={styles.exportSectionPara}>{languages.t('label.export_para_1')}</Text>
+              <Text style={styles.exportSectionPara}>{languages.t('label.export_para_2')}</Text>
 
               <TouchableOpacity style={styles.exportButton} onPress={onShare}>
                 <Text style={styles.exportButtonText}>

@@ -1,30 +1,19 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  BackHandler,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, BackHandler } from 'react-native';
+import { SvgXml } from 'react-native-svg';
+import languages from '../locales/languages';
+import ButtonWrapper from '../components/ButtonWrapper';
+import NavigationBarWrapper from '../components/NavigationBarWrapper';
+import Colors from '../constants/colors';
+import fontFamily from '../constants/fonts';
+import googleMapsIcon from '../assets/svgs/google-maps-logo';
 
 // This is the definitive listing of registered Healthcare Authorities.  To
 // register, just submit a PR against that list on Github.  Users are also
 // free to type in a non-official authority.
 //
-const authoritiesListURL =
-  'https://raw.githubusercontent.com/tripleblindmarket/safe-places/develop/healthcare-authorities.yaml';
-
-const width = Dimensions.get('window').width;
-import languages from './../locales/languages';
-import ButtonWrapper from '../components/ButtonWrapper';
-import NavigationBarWrapper from '../components/NavigationBarWrapper';
-import Colors from '../constants/colors';
-import fontFamily from './../constants/fonts';
-import warning from './../assets/svgs/warning';
-import googleMapsIcon from './../assets/svgs/google-maps-logo';
-import { SvgXml } from 'react-native-svg';
+// const authoritiesListURL =
+// ('https://raw.githubusercontent.com/tripleblindmarket/safe-places/develop/healthcare-authorities.yaml');
 
 class SettingsScreen extends Component {
   constructor(props) {
@@ -85,14 +74,10 @@ class SettingsScreen extends Component {
         <View style={styles.section}>
           <View style={styles.iconRowContainer}>
             <SvgXml xml={googleMapsIcon} style={{ alignSelf: 'center' }} />
-            <Text style={styles.iconRowText}>
-              {languages.t('label.maps_import_title')}
-            </Text>
+            <Text style={styles.iconRowText}>{languages.t('label.maps_import_title')}</Text>
           </View>
           <View style={styles.sectionRowContainer}>
-            <Text style={styles.settingRowText}>
-              {languages.t('label.maps_import_text')}
-            </Text>
+            <Text style={styles.settingRowText}>{languages.t('label.maps_import_text')}</Text>
           </View>
           <ButtonWrapper
             title={languages.t('label.maps_import_button_text')}
@@ -100,7 +85,7 @@ class SettingsScreen extends Component {
             buttonColor={Colors.VIOLET}
             bgColor={Colors.WHITE}
             borderColor={Colors.VIOLET}
-            buttonWidth={'100%'}
+            buttonWidth='100%'
           />
           <View style={styles.sectionRowContainer}>
             <Text style={styles.settingRowNoteText}>
@@ -118,9 +103,7 @@ class SettingsScreen extends Component {
     };
     return (
       <>
-        <TouchableOpacity
-          onPress={actionListener.bind(this)}
-          style={styles.sectionRowContainer}>
+        <TouchableOpacity onPress={actionListener.bind(this)} style={styles.sectionRowContainer}>
           {subtitle ? (
             <Text
               style={[
@@ -133,19 +116,13 @@ class SettingsScreen extends Component {
               {languages.t(text)}
             </Text>
           ) : (
-            <Text
-              style={[
-                styles.settingRowText,
-                { color: color || Colors.VIOLET_TEXT },
-              ]}>
+            <Text style={[styles.settingRowText, { color: color || Colors.VIOLET_TEXT }]}>
               {languages.t(text)}
             </Text>
           )}
           {renderIcon()}
           {subtitle ? (
-            <Text style={styles.settingsRowSubtitleText}>
-              {languages.t(subtitle)}
-            </Text>
+            <Text style={styles.settingsRowSubtitleText}>{languages.t(subtitle)}</Text>
           ) : null}
         </TouchableOpacity>
       </>
@@ -175,31 +152,31 @@ class SettingsScreen extends Component {
                 this.chooseProviderScreenButtonPressed,
                 null,
                 null,
-                'label.choose_provider_subtitle',
+                'label.choose_provider_subtitle'
               )}
-              <View style={styles.divider}></View>
+              <View style={styles.divider} />
               {this.getSettingRow(
                 'label.news_title',
                 this.newsButtonPressed,
                 null,
                 null,
-                'label.news_subtitle',
+                'label.news_subtitle'
               )}
-              <View style={styles.divider}></View>
+              <View style={styles.divider} />
               {this.getSettingRow(
                 'label.event_history_title',
                 this.eventHistoryButtonPressed,
                 null,
                 null,
-                'label.event_history_subtitle',
+                'label.event_history_subtitle'
               )}
-              <View style={styles.divider}></View>
+              <View style={styles.divider} />
               {this.getSettingRow(
                 'label.tested_positive_title',
                 this.testedPositiveButtonPressed,
                 null,
                 null,
-                'label.tested_positive_subtitle',
+                'label.tested_positive_subtitle'
               )}
             </View>
           </View>
@@ -211,11 +188,8 @@ class SettingsScreen extends Component {
           <View style={styles.mainContainer}>
             <View style={styles.section}>
               {this.getSettingRow('label.about_title', this.aboutButtonPressed)}
-              <View style={styles.divider}></View>
-              {this.getSettingRow(
-                'label.legal_page_title',
-                this.licensesButtonPressed,
-              )}
+              <View style={styles.divider} />
+              {this.getSettingRow('label.legal_page_title', this.licensesButtonPressed)}
             </View>
           </View>
           <View style={styles.fullDivider} />

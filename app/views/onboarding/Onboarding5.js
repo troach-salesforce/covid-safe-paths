@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Dimensions,
-  StyleSheet,
-  ImageBackground,
-  StatusBar,
-} from 'react-native';
+import { View, Text, Dimensions, StyleSheet, ImageBackground, StatusBar } from 'react-native';
 import {
   check,
   request,
@@ -15,7 +8,8 @@ import {
   checkNotifications,
   requestNotifications,
 } from 'react-native-permissions';
-import BackgroundImage from './../../assets/images/launchScreenBackground.png';
+import { SvgXml } from 'react-native-svg';
+import BackgroundImage from '../../assets/images/launchScreenBackground.png';
 import languages from '../../locales/languages';
 import ButtonWrapper from '../../components/ButtonWrapper';
 import Colors from '../../constants/colors';
@@ -23,8 +17,7 @@ import IconDenied from '../../assets/svgs/permissionDenied';
 import IconGranted from '../../assets/svgs/permissionGranted';
 import IconUnknown from '../../assets/svgs/permissionUnknown';
 import { SetStoreData } from '../../helpers/General';
-import { isPlatformiOS } from './../../Util';
-import { SvgXml } from 'react-native-svg';
+import { isPlatformiOS } from '../../Util';
 import fontFamily from '../../constants/fonts';
 
 const width = Dimensions.get('window').width;
@@ -83,7 +76,7 @@ class Onboarding extends Component {
       locationPermission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
     }
     check(locationPermission)
-      .then(result => {
+      .then((result) => {
         switch (result) {
           case RESULTS.GRANTED:
             this.setState({
@@ -98,8 +91,8 @@ class Onboarding extends Component {
             break;
         }
       })
-      .catch(error => {
-        console.log('error checking location: ' + error);
+      .catch((error) => {
+        console.log(`error checking location: ${error}`);
       });
   }
 
@@ -129,7 +122,7 @@ class Onboarding extends Component {
     } else {
       locationPermission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
     }
-    request(locationPermission).then(result => {
+    request(locationPermission).then((result) => {
       switch (result) {
         case RESULTS.GRANTED:
           console.log('Location granted');
@@ -179,40 +172,39 @@ class Onboarding extends Component {
   getTitleText() {
     if (!this.isLocationChecked()) {
       return languages.t('label.launch_location_header');
-    } else if (!this.isNotificationChecked()) {
-      return languages.t('label.launch_notif_header');
-    } else {
-      return languages.t('label.launch_done_header');
     }
+    if (!this.isNotificationChecked()) {
+      return languages.t('label.launch_notif_header');
+    }
+    return languages.t('label.launch_done_header');
   }
 
   getTitleTextView() {
     if (!this.isLocationChecked() || !this.isNotificationChecked()) {
       return <Text style={styles.headerText}>{this.getTitleText()}</Text>;
-    } else {
-      return <Text style={styles.bigHeaderText}>{this.getTitleText()}</Text>;
     }
+    return <Text style={styles.bigHeaderText}>{this.getTitleText()}</Text>;
   }
 
   getSubtitleText() {
     if (!this.isLocationChecked()) {
       return languages.t('label.launch_location_subheader');
-    } else if (!this.isNotificationChecked()) {
-      return languages.t('label.launch_notif_subheader');
-    } else {
-      return languages.t('label.launch_done_subheader');
     }
+    if (!this.isNotificationChecked()) {
+      return languages.t('label.launch_notif_subheader');
+    }
+    return languages.t('label.launch_done_subheader');
   }
 
   getLocationPermission() {
     return (
       <>
-        <View style={styles.divider}></View>
+        <View style={styles.divider} />
         <PermissionDescription
           title={languages.t('label.launch_location_access')}
           status={this.state.locationPermission}
         />
-        <View style={styles.divider}></View>
+        <View style={styles.divider} />
       </>
     );
   }
@@ -225,31 +217,26 @@ class Onboarding extends Component {
             title={languages.t('label.launch_notification_access')}
             status={this.state.notificationPermission}
           />
-          <View style={styles.divider}></View>
+          <View style={styles.divider} />
         </>
       );
     }
-    return;
   }
 
   getButtonText() {
     if (!this.isLocationChecked()) {
       return languages.t('label.launch_enable_location');
-    } else if (!this.isNotificationChecked()) {
-      return languages.t('label.launch_enable_notif');
-    } else {
-      return languages.t('label.launch_finish_set_up');
     }
+    if (!this.isNotificationChecked()) {
+      return languages.t('label.launch_enable_notif');
+    }
+    return languages.t('label.launch_finish_set_up');
   }
 
   render() {
     return (
       <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
-        <StatusBar
-          barStyle='light-content'
-          backgroundColor='transparent'
-          translucent={true}
-        />
+        <StatusBar barStyle='light-content' backgroundColor='transparent' translucent />
 
         <View style={styles.mainContainer}>
           <View style={styles.contentContainer}>
@@ -258,7 +245,7 @@ class Onboarding extends Component {
             <View style={styles.statusContainer}>
               {this.getLocationPermission()}
               {this.getNotificationsPermissionIfIOS()}
-              <View style={styles.spacer}></View>
+              <View style={styles.spacer} />
             </View>
           </View>
           <View style={styles.footerContainer}>

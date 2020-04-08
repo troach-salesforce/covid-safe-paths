@@ -1,18 +1,11 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Dimensions,
-  StyleSheet,
-  ImageBackground,
-  StatusBar,
-} from 'react-native';
-import BackgroundImage from './../../assets/images/launchScreenBackground.png';
-import BackgroundOverlayImage from './../../assets/images/launchScreenBackgroundOverlay.png';
+import { View, Text, Dimensions, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import BackgroundImage from '../../assets/images/launchScreenBackground.png';
+import BackgroundOverlayImage from '../../assets/images/launchScreenBackgroundOverlay.png';
 import ButtonWrapper from '../../components/ButtonWrapper';
 import Colors from '../../constants/colors';
 import fontFamily from '../../constants/fonts';
-import languages, { findUserLang } from './../../locales/languages';
+import languages, { findUserLang } from '../../locales/languages';
 import NativePicker from '../../components/NativePicker';
 import { SetStoreData } from '../../helpers/General';
 
@@ -24,32 +17,25 @@ class Onboarding extends Component {
 
     // Get locales list from i18next for locales menu
     let localesList = [];
-    for (let key in languages.options.resources) {
+    Object.keys(languages.options.resources).forEach((key) => {
       localesList = localesList.concat({
         value: key,
         label: languages.options.resources[key].label,
       });
-    }
-
+    });
     this.state = {
-      language: findUserLang(res => {
+      language: findUserLang((res) => {
         this.setState({ language: res });
       }),
-      localesList: localesList,
+      localesList,
     };
   }
 
   render() {
     return (
       <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
-        <ImageBackground
-          source={BackgroundOverlayImage}
-          style={styles.backgroundImage}>
-          <StatusBar
-            barStyle='light-content'
-            backgroundColor='transparent'
-            translucent={true}
-          />
+        <ImageBackground source={BackgroundOverlayImage} style={styles.backgroundImage}>
+          <StatusBar barStyle='light-content' backgroundColor='transparent' translucent />
           <View style={styles.mainContainer}>
             <View
               style={{
@@ -66,11 +52,7 @@ class Onboarding extends Component {
 
                   // If user picks manual lang, update and store setting
                   languages.changeLanguage(itemValue, (err, t) => {
-                    if (err)
-                      return console.log(
-                        'something went wrong in lang change',
-                        err,
-                      );
+                    if (err) return console.log('something went wrong in lang change', err);
                   });
 
                   SetStoreData('LANG_OVERRIDE', itemValue);
@@ -78,9 +60,7 @@ class Onboarding extends Component {
               />
             </View>
             <View style={styles.contentContainer}>
-              <Text style={styles.mainText}>
-                {languages.t('label.launch_screen1_header')}
-              </Text>
+              <Text style={styles.mainText}>{languages.t('label.launch_screen1_header')}</Text>
             </View>
             <View style={styles.footerContainer}>
               <ButtonWrapper
@@ -129,11 +109,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     marginBottom: '10%',
     alignSelf: 'center',
-  },
-  menuOptionText: {
-    fontWeight: 'normal',
-    fontSize: 14,
-    padding: 10,
   },
 });
 

@@ -11,7 +11,9 @@
     "test": "jest test",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "lint-fix": "eslint --fix .",
+    "lint-check": "eslint ."
   },
   "lint-staged": {
     "*.js": [

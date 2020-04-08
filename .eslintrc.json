@@ -42,7 +42,7 @@
     "no-extra-boolean-cast": 2, // Disallow Extra Boolean Casts
     "no-prototype-builtins": 2, // Disallow use of Object.prototypes builtins directly
     "no-undef": 2, // Disallow Undeclared Variables
-    "no-underscore-dangle": 2, // Disallow dangling underscores in identifiers
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }], // Disallow dangling underscores in identifiers
     "no-unreachable": 2, // Disallow unreachable code after return, throw, continue, and break statements
     "no-unused-vars": 2, // Disallow Unused Variables
     "no-use-before-define": 0, // disable no use before define warning
@@ -75,6 +75,11 @@
     "react/destructuring-assignment": 0, // Prevent warning on destructuring assignment of props
     "react/jsx-no-bind": 0,
     "prefer-destructuring": "off", 
+    "no-restricted-globals": 0,
+    "no-plusplus": 0,
+    "camelcase": 0,
+    "no-nested-ternary": 0,
+    "no-unused-expressions": 0,
     "react/jsx-filename-extension": [
       1,
       {

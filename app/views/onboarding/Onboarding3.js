@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Dimensions,
-  StyleSheet,
-  ImageBackground,
-  StatusBar,
-} from 'react-native';
-import BackgroundImage from './../../assets/images/launchScreen3.png';
+import { View, Text, Dimensions, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import BackgroundImage from '../../assets/images/launchScreen3.png';
 import languages from '../../locales/languages';
 import ButtonWrapper from '../../components/ButtonWrapper';
 import Colors from '../../constants/colors';
@@ -15,25 +8,14 @@ import fontFamily from '../../constants/fonts';
 
 const width = Dimensions.get('window').width;
 
-const Onboarding = props => {
+const Onboarding = (props) => {
   return (
     <View style={styles.mainContainer}>
-      <StatusBar
-        barStyle='dark-content'
-        backgroundColor='transparent'
-        translucent={true}
-      />
-      <ImageBackground
-        source={BackgroundImage}
-        style={styles.backgroundImage}
-      />
+      <StatusBar barStyle='dark-content' backgroundColor='transparent' translucent />
+      <ImageBackground source={BackgroundImage} style={styles.backgroundImage} />
       <View style={styles.contentContainer}>
-        <Text style={styles.headerText}>
-          {languages.t('label.launch_screen3_header')}
-        </Text>
-        <Text style={styles.subheaderText}>
-          {languages.t('label.launch_screen3_subheader')}
-        </Text>
+        <Text style={styles.headerText}>{languages.t('label.launch_screen3_header')}</Text>
+        <Text style={styles.subheaderText}>{languages.t('label.launch_screen3_subheader')}</Text>
       </View>
       <View style={styles.footerContainer}>
         <ButtonWrapper
