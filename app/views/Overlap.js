@@ -29,12 +29,8 @@ import languages from '../locales/languages';
 const public_data =
   'https://raw.githubusercontent.com/beoutbreakprepared/nCoV2019/master/latest_data/latestdata.csv';
 const show_button_text = languages.t('label.show_overlap');
-const overlap_true_button_text = languages.t(
-  'label.overlap_found_button_label',
-);
-const no_overlap_button_text = languages.t(
-  'label.overlap_no_results_button_label',
-);
+const overlap_true_button_text = languages.t('label.overlap_found_button_label');
+const no_overlap_button_text = languages.t('label.overlap_no_results_button_label');
 const INITIAL_REGION = {
   latitude: 36.56,
   longitude: 20.39,
@@ -109,8 +105,7 @@ function OverlapScreen(props) {
         if (locationArray !== null) {
           const { latitude, longitude } = locationArray.slice(-1)[0];
 
-          mapView.current &&
-            mapView.current.animateCamera({ center: { latitude, longitude } });
+          mapView.current && mapView.current.animateCamera({ center: { latitude, longitude } });
           setInitialRegion({
             latitude,
             longitude,
@@ -263,7 +258,7 @@ function OverlapScreen(props) {
       getInitialState();
       populateMarkers();
       return () => {};
-    }, []),
+    }, [])
   );
 
   useEffect(() => {
@@ -279,14 +274,10 @@ function OverlapScreen(props) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backArrowTouchable}
-          onPress={backToMain}>
+        <TouchableOpacity style={styles.backArrowTouchable} onPress={backToMain}>
           <Image style={styles.backArrow} source={backArrow} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {languages.t('label.overlap_title')}
-        </Text>
+        <Text style={styles.headerTitle}>{languages.t('label.overlap_title')}</Text>
       </View>
       <MapView
         ref={mapView}
@@ -323,9 +314,7 @@ function OverlapScreen(props) {
           {/* If no overlap found, change button text to say so. Temporary solution, replace with something more robust */}
           <Text style={styles.buttonText}>{languages.t(showButton.text)}</Text>
         </TouchableOpacity>
-        <Text style={styles.sectionDescription}>
-          {languages.t('label.overlap_para_1')}
-        </Text>
+        <Text style={styles.sectionDescription}>{languages.t('label.overlap_para_1')}</Text>
       </View>
       <View style={styles.footer}>
         <Text
@@ -333,9 +322,7 @@ function OverlapScreen(props) {
             styles.sectionFooter,
             { textAlign: 'center', paddingTop: 15, color: Colors.BLUE_LINK },
           ]}
-          onPress={() =>
-            Linking.openURL('https://github.com/beoutbreakprepared/nCoV2019')
-          }>
+          onPress={() => Linking.openURL('https://github.com/beoutbreakprepared/nCoV2019')}>
           {languages.t('label.nCoV2019_url_info')}{' '}
         </Text>
       </View>

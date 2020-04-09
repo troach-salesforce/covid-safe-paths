@@ -82,7 +82,7 @@ class LicensesScreen extends Component {
             <WebView
               originWhitelist={['*']}
               source={{
-                html: this.getLicenses(),
+                html: LicensesScreen.getLicenses(),
               }}
               style={{
                 marginTop: 15,

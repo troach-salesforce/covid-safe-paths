@@ -50,12 +50,9 @@ class MapLocation extends Component {
       locationDataForLine: [],
       locationDataForCircle: [],
     };
-    Geolocation.getCurrentPosition(
-      this.getCurrentLocation.bind(this),
-      (error) => {
-        console.log(`get current position error: ${JSON.stringify(error)}`);
-      },
-    );
+    Geolocation.getCurrentPosition(this.getCurrentLocation.bind(this), (error) => {
+      console.log(`get current position error: ${JSON.stringify(error)}`);
+    });
 
     this.getDeviceLocations();
   }
@@ -158,11 +155,7 @@ class MapLocation extends Component {
   render() {
     return (
       <>
-        <StatusBar
-          barStyle='dark-content'
-          backgroundColor='transparent'
-          translucent
-        />
+        <StatusBar barStyle='dark-content' backgroundColor='transparent' translucent />
         <View style={styles.mainContainer}>
           <MapView
             ref={this.map}
