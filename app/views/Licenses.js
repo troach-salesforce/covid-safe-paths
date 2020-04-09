@@ -3,7 +3,10 @@ import {
   StyleSheet,
   View,
   Text,
+  TouchableOpacity,
   Platform,
+  Image,
+  Linking,
   Dimensions,
   BackHandler,
   ScrollView,
@@ -16,6 +19,7 @@ import fontFamily from '../constants/fonts';
 import languages from '../locales/languages';
 import licenses from '../assets/LICENSE.json';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
+import foreArrow from '../assets/images/foreArrow.png';
 
 class LicensesScreen extends Component {
   backToMain() {
@@ -26,6 +30,10 @@ class LicensesScreen extends Component {
     this.backToMain();
     return true;
   };
+
+  static handleTermsOfUsePressed() {
+    Linking.openURL(languages.t('label.terms_of_use_url'));
+  }
 
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -43,7 +51,7 @@ class LicensesScreen extends Component {
     for (let i = 0; i < licenses.terms_and_licenses.length; i++) {
       const element = licenses.terms_and_licenses[i];
 
-      result += `<B>${element.name}</B><P>`;
+      result += `<H2>${element.name}</H2><P>`;
       result += element.text.replace(/\n/g, '<br/>');
       result += '<hr/>';
     }
@@ -91,6 +99,20 @@ class LicensesScreen extends Component {
             />
           </View>
         </ScrollView>
+        <TouchableOpacity
+          onPress={LicensesScreen.handleTermsOfUsePressed.bind(this)}
+          style={styles.termsInfoRow}>
+          <View style={styles.termsInfoContainer}>
+            <Text
+              style={styles.mainTermsHeader}
+              onPress={() => Linking.openURL(languages.t('label.terms_of_use_url'))}>
+              {languages.t('label.terms_of_use')}
+            </Text>
+          </View>
+          <View style={styles.arrowContainer}>
+            <Image source={foreArrow} style={this.arrow} />
+          </View>
+        </TouchableOpacity>
       </NavigationBarWrapper>
     );
   }
@@ -127,6 +149,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fontFamily.primaryMedium,
     marginTop: 9,
+  },
+  termsInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.SILVER,
+  },
+  termsInfoContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignContent: 'flex-end',
+    padding: 15,
+  },
+  mainTermsHeader: {
+    textAlign: 'left',
+    color: Colors.MISCHKA,
+    fontSize: 20,
+    fontFamily: fontFamily.primaryBold,
+  },
+  arrowContainer: {
+    alignSelf: 'center',
+    paddingRight: 20,
   },
 });
 

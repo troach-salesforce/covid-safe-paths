@@ -1,13 +1,11 @@
-/* eslint-disable max-classes-per-file */
-
 import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 import { GetStoreData, SetStoreData } from '../helpers/General';
-import languages from '../locales/languages';
 import { isPlatformAndroid } from '../Util';
+import languages from '../locales/languages';
 
-let hasBeenStarted = false;
+let isBackgroundGeolocationConfigured = false;
 
 export class LocationData {
   constructor() {
@@ -20,7 +18,8 @@ export class LocationData {
     this.maxBackfillTime = 60000 * 60 * 8; // Time (in milliseconds).  60000 * 60 * 8 = 8 hours
   }
 
-  getLocationData = () => {
+  // eslint-disable-next-line class-methods-use-this
+  getLocationData() {
     return GetStoreData('LOCATION_DATA').then((locationArrayString) => {
       let locationArray = [];
       if (locationArrayString !== null) {
@@ -29,7 +28,7 @@ export class LocationData {
 
       return locationArray;
     });
-  };
+  }
 
   async getPointStats() {
     const locationData = await this.getLocationData();
@@ -131,11 +130,10 @@ export default class LocationServices {
 
     // handles edge cases around Android where start might get called again even though
     // the service is already created.  Make sure the listeners are still bound and exit
-    if (hasBeenStarted) {
+    if (isBackgroundGeolocationConfigured) {
       BackgroundGeolocation.start();
       return;
     }
-    hasBeenStarted = true;
 
     PushNotification.configure({
       // (required) Called when a remote or local notification is opened or received
@@ -210,9 +208,7 @@ export default class LocationServices {
     });
 
     BackgroundGeolocation.on('authorization', (status) => {
-      console.log(
-        `[INFO] BackgroundGeolocation authorization status: ${status}`,
-      );
+      console.log(`[INFO] BackgroundGeolocation authorization status: ${status}`);
 
       if (status !== BackgroundGeolocation.AUTHORIZED) {
         // we need to set delay or otherwise alert may not be shown
@@ -276,19 +272,12 @@ export default class LocationServices {
     });
 
     BackgroundGeolocation.checkStatus((status) => {
-      console.log(
-        '[INFO] BackgroundGeolocation service is running',
-        status.isRunning,
-      );
-      console.log(
-        '[INFO] BackgroundGeolocation services enabled',
-        status.locationServicesEnabled,
-      );
-      console.log(
-        `[INFO] BackgroundGeolocation auth status: ${status.authorization}`,
-      );
+      console.log('[INFO] BackgroundGeolocation service is running', status.isRunning);
+      console.log('[INFO] BackgroundGeolocation services enabled', status.locationServicesEnabled);
+      console.log(`[INFO] BackgroundGeolocation auth status: ${status.authorization}`);
 
       BackgroundGeolocation.start(); // triggers start on start event
+      isBackgroundGeolocationConfigured = true;
 
       if (!status.locationServicesEnabled) {
         // we need to set delay or otherwise alert may not be shown
@@ -343,7 +332,7 @@ export default class LocationServices {
     });
   }
 
-  static stop(/* nav */) {
+  static stop() {
     // unregister all event listeners
     PushNotification.localNotification({
       title: languages.t('label.location_disabled_title'),
@@ -351,6 +340,7 @@ export default class LocationServices {
     });
     BackgroundGeolocation.removeAllListeners();
     BackgroundGeolocation.stop();
+    isBackgroundGeolocationConfigured = false;
     SetStoreData('PARTICIPATE', 'false').then(() => {
       // nav.navigate('LocationTrackingScreen', {});
     });

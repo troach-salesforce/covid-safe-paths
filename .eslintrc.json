@@ -82,6 +82,7 @@
     "no-unused-expressions": 0,
     "react/prefer-stateless-function": 0,
     "react/require-default-props": 0,
+    "max-classes-per-file": 0,
     "react/jsx-filename-extension": [
       1,
       {
