@@ -1,29 +1,21 @@
 import React, { Component } from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
-  Image,
   Dimensions,
   TouchableOpacity,
   BackHandler,
   ScrollView,
 } from 'react-native';
-import { WebView } from 'react-native-webview';
-import AsyncStorage from '@react-native-community/async-storage';
-import { VictoryBar, VictoryAxis, VictoryChart, VictoryTooltip } from 'victory-native';
-import packageJson from '../../package.json';
+import { VictoryBar, VictoryAxis, VictoryChart } from 'victory-native';
 
-import colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
-import backArrow from '../assets/images/backArrow.png';
 import languages from '../locales/languages';
-import { GetStoreData, SetStoreData } from '../helpers/General';
+import { GetStoreData } from '../helpers/General';
 import Colors from '../constants/colors';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
 
-const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const max_exposure_window = 14; // Two weeks is the longest view that matters
 const bin_duration = 5; // each bin count represents a 5 minute period
@@ -76,7 +68,7 @@ class NotificationScreen extends Component {
     this.getInitialState();
   }
 
-  resetState() {}
+  resetState = () => {};
 
   getInitialState = async () => {
     GetStoreData('CROSSED_PATHS').then((dayBin) => {
@@ -112,19 +104,19 @@ class NotificationScreen extends Component {
     });
   };
 
-  colorfill(data) {
-    let color = colors.LOWEST_RISK;
+  colorfill = (data) => {
+    let color = Colors.LOWEST_RISK;
     if (data > Threshold.LOW) {
-      color = colors.LOWER_RISK;
+      color = Colors.LOWER_RISK;
     }
     if (data > Threshold.MEDIUM) {
-      color = colors.MIDDLE_RISK;
+      color = Colors.MIDDLE_RISK;
     }
     if (data > Threshold.HIGH) {
-      color = colors.HIGHEST_RISK;
+      color = Colors.HIGHEST_RISK;
     }
     return color;
-  }
+  };
 
   render() {
     const hasExposure = this.state.data.some((point) => point.y > 0);
@@ -146,9 +138,9 @@ class NotificationScreen extends Component {
                   dependentAxis={false}
                   tickCount={max_exposure_window}
                   tickFormat={(t) =>
-                    t == 1
+                    t === 1
                       ? languages.t('label.notification_today')
-                      : t == 12
+                      : t === 12
                       ? languages.t('label.notification_2_weeks_ago')
                       : ''
                   }
@@ -175,7 +167,7 @@ class NotificationScreen extends Component {
               <ScrollView contentContainerStyle={styles.contentContainer}>
                 {this.state.data.map((data) =>
                   data.y === 0 ? (
-                    data.x == max_exposure_window - 1 && !hasExposure ? (
+                    data.x === max_exposure_window - 1 && !hasExposure ? (
                       <Text style={styles.noExposure}>
                         {languages.t('label.notifications_no_exposure')}
                       </Text>
@@ -185,11 +177,11 @@ class NotificationScreen extends Component {
                   ) : (
                     <View key={data.x} style={styles.notificationView}>
                       <Text style={[styles.notificationsText]}>
-                        {data.x == 0
+                        {data.x === 0
                           ? languages.t('label.notifications_exposure_format_today', {
                               exposureTime: data.y * bin_duration,
                             })
-                          : data.x == 1
+                          : data.x === 1
                           ? languages.t('label.notifications_exposure_format_yesterday', {
                               exposureTime: data.y * bin_duration,
                             })
@@ -204,10 +196,11 @@ class NotificationScreen extends Component {
                 )}
                 <Text style={styles.whatNextHeader}>What does this mean?</Text>
                 <Text style={styles.whatNextBody}>
-                  Individuals who don't exhibit symptoms can sometimes still carry the infection and
-                  infect others. Being careful about social distancing and coming in contact with
-                  large groups or at risk individuals (the elderly, those with significant other
-                  medical issues) is important to manage both your risk and the risk to others.
+                  Individuals who don&apos;t exhibit symptoms can sometimes still carry the
+                  infection and infect others. Being careful about social distancing and coming in
+                  contact with large groups or at risk individuals (the elderly, those with
+                  significant other medical issues) is important to manage both your risk and the
+                  risk to others.
                 </Text>
                 <Text style={styles.whatNextBody}>
                   If you have no symptoms but still would like to be tested you can go to your
@@ -235,44 +228,12 @@ class NotificationScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  // Container covers the entire screen
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
-  },
   main: {
     flex: 1,
     paddingVertical: 20,
     width: '100%',
   },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
-  },
-  buttonTouchable: {
-    borderRadius: 12,
-    backgroundColor: '#665eff',
-    alignSelf: 'center',
-    width: width * 0.7866,
-    marginTop: 30,
-    justifyContent: 'center',
-    paddingVertical: 15,
-    width: '90%',
-  },
-  buttonText: {
-    fontSize: 14,
-    lineHeight: 19,
-    fontFamily: fontFamily.primaryBold,
-    fontSize: 14,
-    lineHeight: 19,
-    letterSpacing: 0,
-    textAlign: 'center',
-    color: '#ffffff',
-  },
+
   mainText: {
     fontSize: 18,
     lineHeight: 24,
@@ -283,83 +244,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     overflow: 'scroll',
   },
-  smallText: {
-    fontSize: 10,
-    lineHeight: 24,
-    fontWeight: '400',
-    textAlignVertical: 'center',
-    padding: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontFamily: fontFamily.primaryRegular,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontFamily: fontFamily.primaryRegular,
-    marginLeft: 20,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    height: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(189, 195, 199,0.6)',
-    alignItems: 'center',
-  },
-  backArrowTouchable: {
-    width: 60,
-    height: 60,
-    paddingTop: 21,
-    paddingLeft: 20,
-  },
-  backArrow: {
-    height: 18,
-    width: 18.48,
-  },
-  sectionDescription: {
-    fontSize: 16,
-    lineHeight: 24,
-    marginTop: 12,
-    overflow: 'scroll',
-    fontFamily: fontFamily.primaryRegular,
-  },
-  notificationsHeader: {
-    backgroundColor: '#665eff',
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-  },
-  notificationsHeaderText: {
-    color: colors.WHITE,
-    fontSize: 18,
-    lineHeight: 22,
-    fontFamily: fontFamily.primaryBold,
-  },
+
   notificationView: {
     width: '100%',
     paddingVertical: 5,
     paddingHorizontal: 20,
   },
   notificationsText: {
-    color: colors.BLACK,
+    color: Colors.BLACK,
     fontSize: 16,
     paddingHorizontal: 10,
     fontFamily: fontFamily.primaryRegular,
-  },
-  notificationsTextHigh: {
-    color: colors.HIGHEST_RISK,
-    fontFamily: fontFamily.primaryBold,
-  },
-  notificationsTextMedium: {
-    color: colors.MIDDLE_RISK,
-    fontFamily: fontFamily.primaryMedium,
-  },
-  noExposure: {
-    margin: 30,
-    color: 'forestgreen',
-    fontSize: 20,
-    textAlign: 'center',
-    fontFamily: fontFamily.primaryMedium,
   },
   divider: {
     marginTop: 15,

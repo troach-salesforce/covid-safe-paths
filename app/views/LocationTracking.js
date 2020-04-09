@@ -1,44 +1,41 @@
+/* eslint-disable react/no-unused-state */
+
+import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
 import React, { Component } from 'react';
 import {
   AppState,
-  SafeAreaView,
-  StyleSheet,
-  Linking,
-  View,
-  Text,
-  TouchableOpacity,
+  BackHandler,
   Dimensions,
   Image,
-  ScrollView,
-  BackHandler,
   ImageBackground,
+  Linking,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
-import PushNotification from 'react-native-push-notification';
+import { check, openSettings, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import Pulse from 'react-native-pulse';
-import { check, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
+import PushNotification from 'react-native-push-notification';
 import { SvgXml } from 'react-native-svg';
-import BackgroundImage from '../assets/images/launchScreenBackground.png';
 import BackgroundImageAtRisk from '../assets/images/backgroundAtRisk.png';
-import Colors from '../constants/colors';
-import LocationServices from '../services/LocationService';
 // import BroadcastingServices from '../services/BroadcastingService';
 import exportImage from '../assets/images/export.png';
-import ButtonWrapper from '../components/ButtonWrapper';
-import { isPlatformiOS } from '../Util';
 import foreArrow from '../assets/images/foreArrow.png';
-
-import { IntersectSet } from '../helpers/Intersect';
-import { GetStoreData, SetStoreData } from '../helpers/General';
-import languages from '../locales/languages';
-
+import BackgroundImage from '../assets/images/launchScreenBackground.png';
+import SettingsGear from '../assets/svgs/settingsGear';
 import StateAtRisk from '../assets/svgs/stateAtRisk';
 import StateNoContact from '../assets/svgs/stateNoContact';
 import StateUnknown from '../assets/svgs/stateUnknown';
-import SettingsGear from '../assets/svgs/settingsGear';
+import ButtonWrapper from '../components/ButtonWrapper';
+import Colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
+import { GetStoreData, SetStoreData } from '../helpers/General';
+import { IntersectSet } from '../helpers/Intersect';
+import languages from '../locales/languages';
+import LocationServices from '../services/LocationService';
+import { isPlatformiOS } from '../Util';
 
 const StateEnum = {
   UNKNOWN: 0,
@@ -46,7 +43,7 @@ const StateEnum = {
   NO_CONTACT: 2,
 };
 
-const StateIcon = ({ title, status, size, ...props }) => {
+const StateIcon = ({ status, size }) => {
   let icon;
   switch (status) {
     case StateEnum.UNKNOWN:
@@ -57,6 +54,8 @@ const StateIcon = ({ title, status, size, ...props }) => {
       break;
     case StateEnum.NO_CONTACT:
       icon = StateNoContact;
+      break;
+    default:
       break;
   }
   return <SvgXml xml={icon} width={size || 80} height={size || 80} />;
@@ -72,7 +71,7 @@ class LocationTracking extends Component {
     this.state = {
       appState: AppState.currentState,
       timer_intersect: null,
-      isLogging: '',
+      isLogging: false,
       currentState: StateEnum.NO_CONTACT,
     };
     try {
@@ -95,7 +94,6 @@ class LocationTracking extends Component {
     } else {
       locationPermission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
     }
-    const locationDisabled = true;
     check(locationPermission)
       .then((result) => {
         switch (result) {
@@ -108,6 +106,9 @@ class LocationTracking extends Component {
             console.log('NO LOCATION');
             LocationServices.stop();
             this.setState({ currentState: StateEnum.UNKNOWN });
+            break;
+          default:
+            break;
         }
       })
       .catch((error) => {
@@ -152,12 +153,13 @@ class LocationTracking extends Component {
     const timer_intersect = setInterval(this.intersect_tick, 1000 * 60 * 60 * 12); // once every 12 hours
     // DEBUG:  1000 * 10); // once every 10 seconds
 
+    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({
       timer_intersect,
     });
   }
 
-  findNewAuthorities() {
+  findNewAuthorities = () => {
     // TODO: This should pull down the Healtcare Authorities list (see Settings.js)
     // Then it should look at the GPS extent box of each authority and (if any
     // of the GPS coordinates change) pop-up a notification that is basically:
@@ -165,7 +167,7 @@ class LocationTracking extends Component {
     //    been.
     // Tapping that notification asks if they want to Add that Healthcare Authority
     // under the Settings screen.
-  }
+  };
 
   intersect_tick = () => {
     // This function is called once every 12 hours.  It should do several things:
@@ -233,7 +235,7 @@ class LocationTracking extends Component {
                 //       news to make it snappy?  Could be a problem in some
                 //       locales with high data costs.
               })
-              .catch((error) => console.log('Failed to save authority/news URL list'));
+              .catch(() => console.log('Failed to save authority/news URL list'));
           }
         } else {
           console.log('No authority list');
@@ -361,7 +363,7 @@ class LocationTracking extends Component {
   }
 
   getPulseIfNeeded() {
-    if (this.state.currentState == StateEnum.NO_CONTACT) {
+    if (this.state.currentState === StateEnum.NO_CONTACT) {
       return (
         <View style={styles.pulseContainer}>
           <Pulse
@@ -394,6 +396,8 @@ class LocationTracking extends Component {
         return <Text style={styles.mainTextAbove}>{languages.t('label.home_at_risk_header')}</Text>;
       case StateEnum.UNKNOWN:
         return <Text style={styles.mainTextBelow}>{languages.t('label.home_unknown_header')}</Text>;
+      default:
+        return null;
     }
   }
 
@@ -405,6 +409,8 @@ class LocationTracking extends Component {
         return 'label.home_at_risk_subtext';
       case StateEnum.UNKNOWN:
         return 'label.home_unknown_subtext';
+      default:
+        return '';
     }
   }
 
@@ -415,6 +421,8 @@ class LocationTracking extends Component {
       case StateEnum.AT_RISK:
         return 'label.home_at_risk_subsubtext';
       case StateEnum.UNKNOWN:
+        return null;
+      default:
         return null;
     }
   }
@@ -428,7 +436,7 @@ class LocationTracking extends Component {
       // buttonFunction = () => {
       //   this.props.navigation.navigate('MapLocation');
       // };
-      return;
+      return null;
     }
     if (this.state.currentState === StateEnum.AT_RISK) {
       buttonLabel = 'label.home_next_steps';
@@ -455,9 +463,9 @@ class LocationTracking extends Component {
     );
   }
 
-  getMayoInfoPressed() {
+  getMayoInfoPressed = () => {
     Linking.openURL(languages.t('label.home_mayo_link_URL'));
-  }
+  };
 
   render() {
     return (

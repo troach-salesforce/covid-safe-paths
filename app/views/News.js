@@ -1,22 +1,11 @@
+/* eslint-disable react-native/no-color-literals */
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  BackHandler,
-  Dimensions,
-  ActivityIndicator,
-  ScrollView,
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  Image,
-  Text,
-} from 'react-native';
+import { StyleSheet, BackHandler, Dimensions, ActivityIndicator, View, Text } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { WebView } from 'react-native-webview';
 import { GetStoreData } from '../helpers/General';
-import colors from '../constants/colors';
 import languages from '../locales/languages';
 // import { Colors } from 'react-native/Libraries/NewAppScreen';
 import fontFamily from '../constants/fonts';
@@ -37,7 +26,6 @@ class NewsScreen extends Component {
       visible: true,
       default_news,
       newsUrls: [default_news, default_news],
-      current_page: 0,
     };
   }
 
@@ -168,33 +156,7 @@ class NewsScreen extends Component {
 
 const styles = StyleSheet.create({
   // Container covers the entire screen
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
-  },
-  web: {
-    width: '100%',
-    margin: 0,
-    padding: 0,
-  },
-  slideContainer: {
-    height: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  slide: {
-    height: 100,
-    backgroundColor: 'rgba(20,20,200,0.3)',
-  },
-  singleNews: {
-    flexGrow: 1,
-    backgroundColor: 'rgba(255,255,255,0.6)',
-    borderRadius: 12,
-    alignSelf: 'center',
-    width: '100%',
-  },
+
   singleNewsHead: {
     height: 48,
     alignItems: 'center',
