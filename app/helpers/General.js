@@ -37,10 +37,7 @@ export async function SetStoreData(key, item) {
   try {
     // we want to wait for the Promise returned by AsyncStorage.setItem()
     // to be resolved to the actual value before returning the value
-    return await AsyncStorage.setItem(
-      key,
-      typeof item === 'string' ? item : JSON.stringify(item),
-    );
+    return await AsyncStorage.setItem(key, typeof item === 'string' ? item : JSON.stringify(item));
   } catch (error) {
     console.log(error.message);
   }

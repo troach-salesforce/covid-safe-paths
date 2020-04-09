@@ -25,15 +25,12 @@ export default class NativePicker extends Component {
   render() {
     // iOS and Android Pickers behave differently, handled below
     if (Platform.OS === 'android') {
-      const selectedItem = this.props.items.find(
-        (i) => i.value === this.props.value,
-      );
+      const selectedItem = this.props.items.find((i) => i.value === this.props.value);
       const selectedLabel = selectedItem ? selectedItem.label : '';
 
       return (
         <View style={styles.inputContainer}>
-          <TouchableOpacity
-            onPress={() => this.setState({ modalVisible: true })}>
+          <TouchableOpacity onPress={() => this.setState({ modalVisible: true })}>
             <TextInput
               style={[styles.touchableTrigger, styles.touchableText]}
               editable={false}
@@ -52,9 +49,7 @@ export default class NativePicker extends Component {
         </View>
       );
     }
-    const selectedItem = this.props.items.find(
-      (i) => i.value === this.props.value,
-    );
+    const selectedItem = this.props.items.find((i) => i.value === this.props.value);
     const selectedLabel = selectedItem ? selectedItem.label : '';
 
     return (
@@ -67,10 +62,7 @@ export default class NativePicker extends Component {
           <Text style={styles.touchableText}>{selectedLabel}</Text>
         </TouchableOpacity>
 
-        <Modal
-          animationType='slide'
-          transparent
-          visible={this.state.modalVisible}>
+        <Modal animationType='slide' transparent visible={this.state.modalVisible}>
           <View style={{ flex: 2 }}>
             <TouchableWithoutFeedback
               style={{ flex: 1, backgroundColor: '#000000', opacity: 0.4 }}
@@ -85,8 +77,7 @@ export default class NativePicker extends Component {
             </TouchableWithoutFeedback>
           </View>
           <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-            <TouchableWithoutFeedback
-              onPress={() => this.setState({ modalVisible: false })}>
+            <TouchableWithoutFeedback onPress={() => this.setState({ modalVisible: false })}>
               <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                   <Text
@@ -101,18 +92,10 @@ export default class NativePicker extends Component {
                     Done
                   </Text>
                 </View>
-                <View
-                  onStartShouldSetResponder={() => true}
-                  onResponderReject={() => {}}>
-                  <Picker
-                    selectedValue={this.props.value}
-                    onValueChange={this.props.onValueChange}>
+                <View onStartShouldSetResponder={() => true} onResponderReject={() => {}}>
+                  <Picker selectedValue={this.props.value} onValueChange={this.props.onValueChange}>
                     {this.props.items.map((i) => (
-                      <Picker.Item
-                        key={i.label}
-                        label={i.label}
-                        value={i.value}
-                      />
+                      <Picker.Item key={i.label} label={i.label} value={i.value} />
                     ))}
                   </Picker>
                 </View>

@@ -113,7 +113,7 @@ class ChooseProviderScreen extends Component {
   // Add selected authorities to state, for display in the FlatList
   addAuthorityToState(prevState, authority) {
     const authorityIndex = prevState.authoritiesList.findIndex(
-      (x) => Object.keys(x)[0] === authority
+      (x) => Object.keys(x)[0] === authority,
     );
 
     if (this.state.selectedAuthorities.findIndex((x) => x.key === authority) === -1) {
@@ -127,7 +127,7 @@ class ChooseProviderScreen extends Component {
         () => {
           // Add current settings state to async storage.
           SetStoreData('AUTHORITY_SOURCE_SETTINGS', this.state.selectedAuthorities);
-        }
+        },
       );
     } else {
       console.log('Not adding the duplicate to sources list');
@@ -153,7 +153,7 @@ class ChooseProviderScreen extends Component {
         () => {
           // Add current settings state to async storage.
           SetStoreData('AUTHORITY_SOURCE_SETTINGS', prevState.selectedAuthorities);
-        }
+        },
       );
     }
   }
@@ -181,12 +181,12 @@ class ChooseProviderScreen extends Component {
               () => {
                 // Add current settings state to async storage.
                 SetStoreData('AUTHORITY_SOURCE_SETTINGS', this.state.selectedAuthorities);
-              }
+              },
             );
           },
         },
       ],
-      { cancelable: false }
+      { cancelable: false },
     );
   }
 

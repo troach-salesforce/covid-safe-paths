@@ -14,10 +14,10 @@ import {
 import Carousel from 'react-native-snap-carousel';
 import LinearGradient from 'react-native-linear-gradient';
 
+import { WebView } from 'react-native-webview';
 import { GetStoreData } from '../helpers/General';
 import colors from '../constants/colors';
-import { WebView } from 'react-native-webview';
-import languages from './../locales/languages';
+import languages from '../locales/languages';
 // import { Colors } from 'react-native/Libraries/NewAppScreen';
 import fontFamily from '../constants/fonts';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
@@ -29,13 +29,13 @@ const height = Dimensions.get('window').height;
 class NewsScreen extends Component {
   constructor(props) {
     super(props);
-    let default_news = {
+    const default_news = {
       name: languages.t('label.default_news_site_name'),
       url: languages.t('label.default_news_site_url'),
     };
     this.state = {
       visible: true,
-      default_news: default_news,
+      default_news,
       newsUrls: [default_news, default_news],
       current_page: 0,
     };
@@ -56,7 +56,7 @@ class NewsScreen extends Component {
     });
   }
 
-  _renderItem = item => {
+  _renderItem = (item) => {
     console.log('Item', item);
     return (
       <View style={styles.singleNews}>
@@ -81,17 +81,18 @@ class NewsScreen extends Component {
       </View>
     );
   };
+
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
 
     GetStoreData('AUTHORITY_NEWS')
-      .then(name_news => {
+      .then((name_news) => {
         console.log('name_news:', name_news);
 
         // Bring in news from the various authorities.  This is
         // pulled down from the web when you subscribe to an Authority
         // on the Settings page.
-        let arr = [];
+        const arr = [];
 
         // TODO: using this as test data for now without assigning
         arr.push({
@@ -105,7 +106,7 @@ class NewsScreen extends Component {
           newsUrls: arr,
         });
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   }
 
   componentWillUnmount() {
@@ -135,14 +136,14 @@ class NewsScreen extends Component {
                 paddingVertical: 16,
               }}>
               <Carousel
-                ref={c => {
+                ref={(c) => {
                   this._carousel = c;
                 }}
                 data={this.state.newsUrls}
                 renderItem={this._renderItem}
                 sliderWidth={width}
                 itemWidth={width * 0.85}
-                layout={'default'}
+                layout='default'
                 scrollEnabled
               />
 

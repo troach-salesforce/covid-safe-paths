@@ -137,9 +137,7 @@ function ExportScreen(props) {
           colors={[Colors.VIOLET_BUTTON, Colors.VIOLET_BUTTON_DARK]}
           style={{ flex: 1, height: '100%' }}>
           <View style={styles.headerContainer}>
-            <TouchableOpacity
-              style={styles.backArrowTouchable}
-              onPress={() => backToMain()}>
+            <TouchableOpacity style={styles.backArrowTouchable} onPress={() => backToMain()}>
               <SvgXml style={styles.backArrow} xml={close} />
             </TouchableOpacity>
           </View>
@@ -149,12 +147,8 @@ function ExportScreen(props) {
               <Text style={styles.exportSectionTitles}>
                 {languages.t('label.tested_positive_title')}
               </Text>
-              <Text style={styles.exportSectionPara}>
-                {languages.t('label.export_para_1')}
-              </Text>
-              <Text style={styles.exportSectionPara}>
-                {languages.t('label.export_para_2')}
-              </Text>
+              <Text style={styles.exportSectionPara}>{languages.t('label.export_para_1')}</Text>
+              <Text style={styles.exportSectionPara}>{languages.t('label.export_para_2')}</Text>
 
               <TouchableOpacity style={styles.exportButton} onPress={onShare}>
                 <Text style={styles.exportButtonText}>

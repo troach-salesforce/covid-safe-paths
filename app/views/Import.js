@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import {
-  ActivityIndicator,
-  BackHandler,
-  Dimensions,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, BackHandler, Dimensions, StyleSheet, Text, View } from 'react-native';
 import WebView from 'react-native-webview';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
 import fontFamily from '../constants/fonts';
@@ -53,18 +46,13 @@ class ImportScreen extends Component {
         onBackPress={this.backToMain.bind(this)}>
         <View style={styles.main}>
           <View style={styles.subHeaderTitle}>
-            <Text style={styles.sectionDescription}>
-              {languages.t('label.import_step_1')}
-            </Text>
-            <Text style={styles.sectionDescription}>
-              {languages.t('label.import_step_2')}
-            </Text>
+            <Text style={styles.sectionDescription}>{languages.t('label.import_step_1')}</Text>
+            <Text style={styles.sectionDescription}>{languages.t('label.import_step_2')}</Text>
           </View>
           <View style={styles.web}>
             <WebView
               source={{
-                uri:
-                  'https://takeout.google.com/settings/takeout/custom/location_history',
+                uri: 'https://takeout.google.com/settings/takeout/custom/location_history',
               }}
               onLoad={() => this.hideSpinner()}
               // Reload once on error to workaround chromium regression for Android

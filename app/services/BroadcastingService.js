@@ -91,14 +91,7 @@ function saveMyUUID(me) {
       time: unixtimeUTC,
     };
 
-    console.log(
-      '[Bluetooth]',
-      nowStr(),
-      me.uuid,
-      'Saving myUUID:',
-      me.uuid,
-      curated.length,
-    );
+    console.log('[Bluetooth]', nowStr(), me.uuid, 'Saving myUUID:', me.uuid, curated.length);
     curated.push(uuid_time);
 
     SetStoreData('MY_UUIDs', curated);
@@ -129,26 +122,14 @@ function broadcast(uuid) {
   AndroidBLEAdvertiserModule.setCompanyId(MANUFACTURER_ID);
   AndroidBLEAdvertiserModule.broadcast(uuid, MANUFACTURER_DATA)
     .then((success) =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        uuid,
-        'Broadcasting Sucessful',
-        success,
-      ),
+      console.log('[Bluetooth]', nowStr(), uuid, 'Broadcasting Sucessful', success),
     )
-    .catch((error) =>
-      console.log('[Bluetooth]', nowStr(), uuid, 'Broadcasting Error', error),
-    );
+    .catch((error) => console.log('[Bluetooth]', nowStr(), uuid, 'Broadcasting Error', error));
 
   // console.log('[Bluetooth]', nowStr(), currentUUID, "Starting Scanner");
   AndroidBLEAdvertiserModule.scan(MANUFACTURER_DATA, {})
-    .then((success) =>
-      console.log('[Bluetooth]', nowStr(), uuid, 'Scan Successful', success),
-    )
-    .catch((error) =>
-      console.log('[Bluetooth]', nowStr(), uuid, 'Scan Error', error),
-    );
+    .then((success) => console.log('[Bluetooth]', nowStr(), uuid, 'Scan Successful', success))
+    .catch((error) => console.log('[Bluetooth]', nowStr(), uuid, 'Scan Error', error));
 }
 
 function stopBroadcast(uuid) {
@@ -157,32 +138,14 @@ function stopBroadcast(uuid) {
   // console.log('[Bluetooth]', nowStr(), currentUUID, 'Stopping Broadcast');
   AndroidBLEAdvertiserModule.stopBroadcast()
     .then((success) =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        uuid,
-        'Stop Broadcast Successful',
-        success,
-      ),
+      console.log('[Bluetooth]', nowStr(), uuid, 'Stop Broadcast Successful', success),
     )
-    .catch((error) =>
-      console.log('[Bluetooth]', nowStr(), uuid, 'Stop Broadcast Error', error),
-    );
+    .catch((error) => console.log('[Bluetooth]', nowStr(), uuid, 'Stop Broadcast Error', error));
 
   // console.log('[Bluetooth]', nowStr(), currentUUID, "Stopping Scanning");
   AndroidBLEAdvertiserModule.stopScan()
-    .then((success) =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        uuid,
-        'Stop Scan Successful',
-        success,
-      ),
-    )
-    .catch((error) =>
-      console.log('[Bluetooth]', nowStr(), uuid, 'Stop Scan Error', error),
-    );
+    .then((success) => console.log('[Bluetooth]', nowStr(), uuid, 'Stop Scan Successful', success))
+    .catch((error) => console.log('[Bluetooth]', nowStr(), uuid, 'Stop Scan Error', error));
 }
 
 function generateNewUUIDAndBroadcast() {
@@ -211,8 +174,7 @@ export default class BroadcastingServices {
             },
             {
               text: 'No',
-              onPress: () =>
-                console.log('User does not want to activate Bluetooth'),
+              onPress: () => console.log('User does not want to activate Bluetooth'),
               style: 'cancel',
             },
           ],
@@ -224,33 +186,16 @@ export default class BroadcastingServices {
   static start() {
     // Do not run on iOS for now.
     if (isPlatformAndroid()) {
-      const eventEmitter = new NativeEventEmitter(
-        NativeModules.AndroidBLEAdvertiserModule,
-      );
-      onBTStatusChange = eventEmitter.addListener(
-        'onBTStatusChange',
-        (status) => {
-          console.log(
-            '[Bluetooth]',
-            nowStr(),
-            currentUUID,
-            'Bluetooth Status Change',
-            status,
-          );
-          if (status.enabled) BroadcastingServices.startAndSetCallbacks();
-          else BroadcastingServices.stopAndClearCallbacks();
-        },
-      );
+      const eventEmitter = new NativeEventEmitter(NativeModules.AndroidBLEAdvertiserModule);
+      onBTStatusChange = eventEmitter.addListener('onBTStatusChange', (status) => {
+        console.log('[Bluetooth]', nowStr(), currentUUID, 'Bluetooth Status Change', status);
+        if (status.enabled) BroadcastingServices.startAndSetCallbacks();
+        else BroadcastingServices.stopAndClearCallbacks();
+      });
 
       AndroidBLEAdvertiserModule.getAdapterState()
         .then((result) => {
-          console.log(
-            '[Bluetooth]',
-            nowStr(),
-            currentUUID,
-            'isBTActive',
-            result,
-          );
+          console.log('[Bluetooth]', nowStr(), currentUUID, 'isBTActive', result);
           if (result === 'STATE_ON') {
             BroadcastingServices.startAndSetCallbacks();
           } else {
@@ -272,13 +217,7 @@ export default class BroadcastingServices {
 
       AndroidBLEAdvertiserModule.getAdapterState()
         .then((result) => {
-          console.log(
-            '[Bluetooth]',
-            nowStr(),
-            currentUUID,
-            'isBTActive',
-            result,
-          );
+          console.log('[Bluetooth]', nowStr(), currentUUID, 'isBTActive', result);
           if (result === 'STATE_ON') {
             BroadcastingServices.stopAndClearCallbacks();
           }
@@ -296,9 +235,7 @@ export default class BroadcastingServices {
     }
 
     // listening event.
-    const eventEmitter = new NativeEventEmitter(
-      NativeModules.AndroidBLEAdvertiserModule,
-    );
+    const eventEmitter = new NativeEventEmitter(NativeModules.AndroidBLEAdvertiserModule);
     onDeviceFound = eventEmitter.addListener('onDeviceFound', (event) => {
       console.log('[Bluetooth]', nowStr(), currentUUID, 'New Device', event);
       if (event.serviceUuids && event.serviceUuids.length > 0)

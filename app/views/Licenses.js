@@ -77,7 +77,7 @@ class LicensesScreen extends Component {
                 OS:
                 {`${Platform.OS} v${Platform.Version}`};
                 {`${Math.trunc(Dimensions.get('screen').width)} x ${Math.trunc(
-                  Dimensions.get('screen').height
+                  Dimensions.get('screen').height,
                 )}`}
               </Text>
             </View>

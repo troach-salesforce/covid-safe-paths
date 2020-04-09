@@ -152,7 +152,7 @@ class SettingsScreen extends Component {
                 this.chooseProviderScreenButtonPressed,
                 null,
                 null,
-                'label.choose_provider_subtitle'
+                'label.choose_provider_subtitle',
               )}
               <View style={styles.divider} />
               {this.getSettingRow(
@@ -160,7 +160,7 @@ class SettingsScreen extends Component {
                 this.newsButtonPressed,
                 null,
                 null,
-                'label.news_subtitle'
+                'label.news_subtitle',
               )}
               <View style={styles.divider} />
               {this.getSettingRow(
@@ -168,7 +168,7 @@ class SettingsScreen extends Component {
                 this.eventHistoryButtonPressed,
                 null,
                 null,
-                'label.event_history_subtitle'
+                'label.event_history_subtitle',
               )}
               <View style={styles.divider} />
               {this.getSettingRow(
@@ -176,7 +176,7 @@ class SettingsScreen extends Component {
                 this.testedPositiveButtonPressed,
                 null,
                 null,
-                'label.tested_positive_subtitle'
+                'label.tested_positive_subtitle',
               )}
             </View>
           </View>

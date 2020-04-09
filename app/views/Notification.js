@@ -11,20 +11,15 @@ import {
   ScrollView,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-community/async-storage';
+import { VictoryBar, VictoryAxis, VictoryChart, VictoryTooltip } from 'victory-native';
 import packageJson from '../../package.json';
 
 import colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
-import backArrow from './../assets/images/backArrow.png';
-import languages from './../locales/languages';
-import AsyncStorage from '@react-native-community/async-storage';
+import backArrow from '../assets/images/backArrow.png';
+import languages from '../locales/languages';
 import { GetStoreData, SetStoreData } from '../helpers/General';
-import {
-  VictoryBar,
-  VictoryAxis,
-  VictoryChart,
-  VictoryTooltip,
-} from 'victory-native';
 import Colors from '../constants/colors';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
 
@@ -84,7 +79,7 @@ class NotificationScreen extends Component {
   resetState() {}
 
   getInitialState = async () => {
-    GetStoreData('CROSSED_PATHS').then(dayBin => {
+    GetStoreData('CROSSED_PATHS').then((dayBin) => {
       console.log(dayBin);
 
       /* DEBUGGING TOOL -- handy for creating faux data
@@ -101,19 +96,15 @@ class NotificationScreen extends Component {
         this.setState({ dataAvailable: false });
         console.log("Can't found Crossed Paths");
       } else {
-        var crossed_path_data = [];
+        const crossed_path_data = [];
         console.log('Found Crossed Paths');
         this.setState({ dataAvailable: true });
-        let dayBinParsed = JSON.parse(dayBin);
+        const dayBinParsed = JSON.parse(dayBin);
 
         // Don't display more than two weeks of crossing data
-        for (
-          var i = 0;
-          i < dayBinParsed.length && i < max_exposure_window;
-          i++
-        ) {
+        for (let i = 0; i < dayBinParsed.length && i < max_exposure_window; i++) {
           const val = dayBinParsed[i];
-          let data = { x: i, y: val, fill: this.colorfill(val) };
+          const data = { x: i, y: val, fill: this.colorfill(val) };
           crossed_path_data.push(data);
         }
         this.setState({ data: crossed_path_data });
@@ -122,7 +113,7 @@ class NotificationScreen extends Component {
   };
 
   colorfill(data) {
-    var color = colors.LOWEST_RISK;
+    let color = colors.LOWEST_RISK;
     if (data > Threshold.LOW) {
       color = colors.LOWER_RISK;
     }
@@ -136,27 +127,25 @@ class NotificationScreen extends Component {
   }
 
   render() {
-    const hasExposure = this.state.data.some(point => point.y > 0);
+    const hasExposure = this.state.data.some((point) => point.y > 0);
 
     return (
       <NavigationBarWrapper
         title={languages.t('label.event_history_title')}
         onBackPress={this.backToMain.bind(this)}>
         <View style={styles.main}>
-          <Text style={styles.pageTitle}>
-            {languages.t('label.notification_title')}
-          </Text>
+          <Text style={styles.pageTitle}>{languages.t('label.notification_title')}</Text>
           {this.state.dataAvailable ? (
             <>
               <VictoryChart
                 height={0.25 * height}
                 padding={{ top: 20, bottom: 50, left: 20, right: 40 }}
                 margin={0}
-                dependentAxis={true}>
+                dependentAxis>
                 <VictoryAxis
                   dependentAxis={false}
                   tickCount={max_exposure_window}
-                  tickFormat={t =>
+                  tickFormat={(t) =>
                     t == 1
                       ? languages.t('label.notification_today')
                       : t == 12
@@ -184,28 +173,26 @@ class NotificationScreen extends Component {
               <View style={styles.fullDivider} />
 
               <ScrollView contentContainerStyle={styles.contentContainer}>
-                {this.state.data.map(data =>
+                {this.state.data.map((data) =>
                   data.y === 0 ? (
                     data.x == max_exposure_window - 1 && !hasExposure ? (
                       <Text style={styles.noExposure}>
                         {languages.t('label.notifications_no_exposure')}
                       </Text>
                     ) : (
-                      <Text style={{ height: 0 }}></Text>
+                      <Text style={{ height: 0 }} />
                     )
                   ) : (
                     <View key={data.x} style={styles.notificationView}>
                       <Text style={[styles.notificationsText]}>
                         {data.x == 0
-                          ? languages.t(
-                              'label.notifications_exposure_format_today',
-                              { exposureTime: data.y * bin_duration },
-                            )
+                          ? languages.t('label.notifications_exposure_format_today', {
+                              exposureTime: data.y * bin_duration,
+                            })
                           : data.x == 1
-                          ? languages.t(
-                              'label.notifications_exposure_format_yesterday',
-                              { exposureTime: data.y * bin_duration },
-                            )
+                          ? languages.t('label.notifications_exposure_format_yesterday', {
+                              exposureTime: data.y * bin_duration,
+                            })
                           : languages.t('label.notifications_exposure_format', {
                               daysAgo: data.x,
                               exposureTime: data.y * bin_duration,
@@ -217,16 +204,14 @@ class NotificationScreen extends Component {
                 )}
                 <Text style={styles.whatNextHeader}>What does this mean?</Text>
                 <Text style={styles.whatNextBody}>
-                  Individuals who don't exhibit symptoms can sometimes still
-                  carry the infection and infect others. Being careful about
-                  social distancing and coming in contact with large groups or
-                  at risk individuals (the elderly, those with significant other
-                  medical issues) is important to manage both your risk and the
-                  risk to others.
+                  Individuals who don't exhibit symptoms can sometimes still carry the infection and
+                  infect others. Being careful about social distancing and coming in contact with
+                  large groups or at risk individuals (the elderly, those with significant other
+                  medical issues) is important to manage both your risk and the risk to others.
                 </Text>
                 <Text style={styles.whatNextBody}>
-                  If you have no symptoms but still would like to be tested you
-                  can go to your nearest testing site.
+                  If you have no symptoms but still would like to be tested you can go to your
+                  nearest testing site.
                 </Text>
               </ScrollView>
             </>
@@ -235,12 +220,8 @@ class NotificationScreen extends Component {
               <Text style={styles.mainText}>
                 {languages.t('label.notification_data_not_available')}
               </Text>
-              <Text style={styles.mainText}>
-                {languages.t('label.notification_warning_text')}
-              </Text>
-              <TouchableOpacity
-                style={styles.buttonTouchable}
-                onPress={() => this.goToSettings()}>
+              <Text style={styles.mainText}>{languages.t('label.notification_warning_text')}</Text>
+              <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.goToSettings()}>
                 <Text style={styles.buttonText}>
                   {languages.t('label.notification_random_data_button')}
                 </Text>

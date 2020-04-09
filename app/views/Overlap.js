@@ -258,7 +258,7 @@ function OverlapScreen(props) {
       getInitialState();
       populateMarkers();
       return () => {};
-    }, [])
+    }, []),
   );
 
   useEffect(() => {

@@ -8,12 +8,7 @@
     "prettier/react"
   ],
   "parser": "babel-eslint",
-  "plugins": [
-    "react",
-    "react-native",
-    "prettier"
-    // "json"
-  ],
+  "plugins": ["react", "react-native", "prettier"],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
@@ -89,13 +84,6 @@
         "extensions": [".js", ".jsx"]
       }
     ],
-    "prettier/prettier": [
-      "error",
-      {
-        "trailingComma": "es5",
-        "singleQuote": true,
-        "printWidth": 100
-      }
-    ]
+    "prettier/prettier": ["error"]
   }
 }

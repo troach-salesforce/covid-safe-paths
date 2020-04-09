@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Dimensions,
-  ImageBackground,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Dimensions, ImageBackground, StatusBar, StyleSheet, Text, View } from 'react-native';
 import {
   check,
   checkNotifications,
@@ -254,11 +247,7 @@ class Onboarding extends Component {
   render() {
     return (
       <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
-        <StatusBar
-          barStyle='light-content'
-          backgroundColor='transparent'
-          translucent
-        />
+        <StatusBar barStyle='light-content' backgroundColor='transparent' translucent />
 
         <View style={styles.mainContainer}>
           <View style={styles.contentContainer}>

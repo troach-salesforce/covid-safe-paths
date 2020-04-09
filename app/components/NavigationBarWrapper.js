@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import PropTypes from 'prop-types';
 import { SvgXml } from 'react-native-svg';
 import backArrow from '../assets/svgs/backArrow';
