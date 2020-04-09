@@ -1,8 +1,9 @@
-import * as React from 'react';
-import { StyleSheet, Dimensions, View } from 'react-native';
-import Button from './Button';
+/* eslint-disable react-native/no-color-literals */
 import PropTypes from 'prop-types';
+import * as React from 'react';
+import { Dimensions, StyleSheet, View, ViewPropTypes } from 'react-native';
 import fontFamily from '../constants/fonts';
+import Button from './Button';
 
 const width = Dimensions.get('window').width;
 
@@ -14,7 +15,11 @@ class ButtonWrapper extends React.Component {
     }
     return (
       <View style={[styles.buttonContainer, additionalStyle]}>
-        <Button titleStyle={styles.primaryButtonText} {...this.props} />
+        <Button
+          titleStyle={styles.primaryButtonText}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...this.props}
+        />
       </View>
     );
   }
@@ -43,9 +48,10 @@ ButtonWrapper.propTypes = {
   buttonColor: PropTypes.string,
   bgColor: PropTypes.string.isRequired,
   toBgColor: PropTypes.string,
-  titleStyle: PropTypes.object,
-  buttonStyle: PropTypes.object,
+  titleStyle: ViewPropTypes.style,
+  buttonStyle: ViewPropTypes.style,
   borderColor: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
   buttonWidth: PropTypes.any,
 };
 

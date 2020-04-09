@@ -1,5 +1,5 @@
 import pluralize from 'pluralize';
-import languages from './../locales/languages';
+import languages from '../locales/languages';
 
 export function timeSincePoint(point) {
   if (!point) {
@@ -16,32 +16,32 @@ export function timeSincePoint(point) {
       ? pluralize('minute', pointMinutes, true)
       : languages.t('label.less_than_one_minute'),
   ]
-    .filter(item => item)
+    .filter((item) => item)
     .join(' ');
 
   return pointTime;
 }
 
 function daysDifferenceFromNow(timestamp) {
-  var difference = now() - timestamp;
-  var daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
+  const difference = now() - timestamp;
+  const daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
   return daysDifference;
 }
 
 function hoursDifferenceFromNow(timestamp) {
-  var difference = now() - timestamp;
-  var hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+  const difference = now() - timestamp;
+  const hoursDifference = Math.floor(difference / 1000 / 60 / 60);
   return hoursDifference % 24;
 }
 
 function minutesDifferenceFromNow(timestamp) {
-  var difference = now() - timestamp;
-  var minutesDifference = Math.floor(difference / 1000 / 60);
+  const difference = now() - timestamp;
+  const minutesDifference = Math.floor(difference / 1000 / 60);
 
   return minutesDifference % 60;
 }
 
 function now() {
-  let nowUTC = new Date().toISOString();
+  const nowUTC = new Date().toISOString();
   return Date.parse(nowUTC);
 }

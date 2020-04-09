@@ -1,46 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  Dimensions,
-  TouchableOpacity,
-  BackHandler,
-  StatusBar,
-  ScrollView,
-  Platform,
-} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import RNFetchBlob from 'rn-fetch-blob';
+import React, { useEffect, useState } from 'react';
+import {
+  BackHandler,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import RNFS from 'react-native-fs';
-import Share from 'react-native-share';
 // import colors from '../constants/colors';
 import LinearGradient from 'react-native-linear-gradient';
+import Share from 'react-native-share';
 import { SvgXml } from 'react-native-svg';
-import fontFamily from '../constants/fonts';
-import { GetStoreData } from '../helpers/General';
-import { timeSincePoint } from '../helpers/convertPointsToString';
-import LocationServices, { LocationData } from '../services/LocationService';
-import backArrow from '../assets/images/backArrow.png';
-import { isPlatformiOS } from '../Util';
-
-import Colors from '../constants/colors';
-import languages from '../locales/languages';
-import licenses from '../assets/LICENSE.json';
+import RNFetchBlob from 'rn-fetch-blob';
 import close from '../assets/svgs/close';
 import exportIcon from '../assets/svgs/export';
+import Colors from '../constants/colors';
+import fontFamily from '../constants/fonts';
+import languages from '../locales/languages';
+import { LocationData } from '../services/LocationService';
+import { isPlatformiOS } from '../Util';
 
-const width = Dimensions.get('window').width;
 const base64 = RNFetchBlob.base64;
 
 function ExportScreen(props) {
   const { shareButtonDisabled } = props;
+  // eslint-disable-next-line no-unused-vars
   const [pointStats, setPointStats] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [buttonDisabled, setButtonDisabled] = useState(shareButtonDisabled);
-  const { navigate } = useNavigation();
 
   function handleBackPress() {
     props.navigation.goBack();
@@ -50,12 +42,12 @@ function ExportScreen(props) {
   useFocusEffect(
     React.useCallback(() => {
       const locationData = new LocationData();
-      locationData.getPointStats().then((pointStats) => {
-        setPointStats(pointStats);
-        setButtonDisabled(pointStats.pointCount === 0);
+      locationData.getPointStats().then((stats) => {
+        setPointStats(stats);
+        setButtonDisabled(stats.pointCount === 0);
       });
       return () => {};
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -81,10 +73,11 @@ function ExportScreen(props) {
       const title = 'PrivateKit.json';
       const filename = `${unixtimeUTC}.json`;
       const message = 'Here is my location log from Private Kit.';
+      let url;
       if (isPlatformiOS()) {
-        var url = `${RNFS.DocumentDirectoryPath}/${filename}`;
+        url = `${RNFS.DocumentDirectoryPath}/${filename}`;
         await RNFS.writeFile(url, jsonData, 'utf8')
-          .then((success) => {
+          .then(() => {
             options = {
               activityItemSources: [
                 {
@@ -144,7 +137,9 @@ function ExportScreen(props) {
           colors={[Colors.VIOLET_BUTTON, Colors.VIOLET_BUTTON_DARK]}
           style={{ flex: 1, height: '100%' }}>
           <View style={styles.headerContainer}>
-            <TouchableOpacity style={styles.backArrowTouchable} onPress={() => backToMain()}>
+            <TouchableOpacity
+              style={styles.backArrowTouchable}
+              onPress={() => backToMain()}>
               <SvgXml style={styles.backArrow} xml={close} />
             </TouchableOpacity>
           </View>
@@ -154,8 +149,12 @@ function ExportScreen(props) {
               <Text style={styles.exportSectionTitles}>
                 {languages.t('label.tested_positive_title')}
               </Text>
-              <Text style={styles.exportSectionPara}>{languages.t('label.export_para_1')}</Text>
-              <Text style={styles.exportSectionPara}>{languages.t('label.export_para_2')}</Text>
+              <Text style={styles.exportSectionPara}>
+                {languages.t('label.export_para_1')}
+              </Text>
+              <Text style={styles.exportSectionPara}>
+                {languages.t('label.export_para_2')}
+              </Text>
 
               <TouchableOpacity style={styles.exportButton} onPress={onShare}>
                 <Text style={styles.exportButtonText}>

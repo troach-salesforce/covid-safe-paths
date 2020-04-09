@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import BackgroundImage from '../../assets/images/launchScreenBackground.png';
 import BackgroundOverlayImage from '../../assets/images/launchScreenBackgroundOverlay.png';
 import ButtonWrapper from '../../components/ButtonWrapper';
+import NativePicker from '../../components/NativePicker';
 import Colors from '../../constants/colors';
 import fontFamily from '../../constants/fonts';
-import languages, { findUserLang } from '../../locales/languages';
-import NativePicker from '../../components/NativePicker';
 import { SetStoreData } from '../../helpers/General';
+import languages, { findUserLang } from '../../locales/languages';
 
 const width = Dimensions.get('window').width;
 
@@ -34,8 +41,14 @@ class Onboarding extends Component {
   render() {
     return (
       <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
-        <ImageBackground source={BackgroundOverlayImage} style={styles.backgroundImage}>
-          <StatusBar barStyle='light-content' backgroundColor='transparent' translucent />
+        <ImageBackground
+          source={BackgroundOverlayImage}
+          style={styles.backgroundImage}>
+          <StatusBar
+            barStyle='light-content'
+            backgroundColor='transparent'
+            translucent
+          />
           <View style={styles.mainContainer}>
             <View
               style={{
@@ -47,12 +60,17 @@ class Onboarding extends Component {
               <NativePicker
                 items={this.state.localesList}
                 value={this.state.language}
-                onValueChange={(itemValue, itemIndex) => {
+                onValueChange={(itemValue) => {
                   this.setState({ language: itemValue });
 
                   // If user picks manual lang, update and store setting
-                  languages.changeLanguage(itemValue, (err, t) => {
-                    if (err) return console.log('something went wrong in lang change', err);
+                  languages.changeLanguage(itemValue, (err) => {
+                    if (err)
+                      return console.log(
+                        'something went wrong in lang change',
+                        err,
+                      );
+                    return () => {};
                   });
 
                   SetStoreData('LANG_OVERRIDE', itemValue);
@@ -60,7 +78,9 @@ class Onboarding extends Component {
               />
             </View>
             <View style={styles.contentContainer}>
-              <Text style={styles.mainText}>{languages.t('label.launch_screen1_header')}</Text>
+              <Text style={styles.mainText}>
+                {languages.t('label.launch_screen1_header')}
+              </Text>
             </View>
             <View style={styles.footerContainer}>
               <ButtonWrapper

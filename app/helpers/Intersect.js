@@ -4,18 +4,11 @@
  * v1 - Unencrypted, simpleminded (minimal optimization).
  */
 
-import { GetStoreData, SetStoreData } from '../helpers/General';
+import { GetStoreData, SetStoreData } from './General';
 
 export async function IntersectSet(concernLocationArray, completion) {
-  GetStoreData('LOCATION_DATA').then(locationArrayString => {
-    var locationArray;
-    if (locationArrayString !== null) {
-      locationArray = JSON.parse(locationArrayString);
-    } else {
-      locationArray = [];
-    }
-
-    let dayBin = [
+  GetStoreData('LOCATION_DATA', false).then((locationArray = []) => {
+    const dayBin = [
       0,
       0,
       0,
@@ -48,43 +41,43 @@ export async function IntersectSet(concernLocationArray, completion) {
     ]; // Bins for 28 days
 
     // Sort the concernLocationArray
-    let localArray = normalizeData(locationArray);
-    let concernArray = normalizeData(concernLocationArray);
+    const localArray = normalizeData(locationArray);
+    const concernArray = normalizeData(concernLocationArray);
 
-    let concernTimeWindow = 1000 * 60 * 60 * 2; // +/- 2 hours window
-    let concernDistWindow = 60; // distance of concern, in feet
+    const concernTimeWindow = 1000 * 60 * 60 * 2; // +/- 2 hours window
+    const concernDistWindow = 60; // distance of concern, in feet
 
     // At 38 degrees North latitude:
-    let ftPerLat = 364000; // 1 deg lat equals 364,000 ft
-    let ftPerLon = 288200; // 1 deg of longitude equals 288,200 ft
+    const ftPerLat = 364000; // 1 deg lat equals 364,000 ft
+    const ftPerLon = 288200; // 1 deg of longitude equals 288,200 ft
 
-    var nowUTC = new Date().toISOString();
-    var timeNow = Date.parse(nowUTC);
+    const nowUTC = new Date().toISOString();
+    const timeNow = Date.parse(nowUTC);
 
     // Save a little CPU, no need to do sqrt()
-    let concernDistWindowSq = concernDistWindow * concernDistWindow;
+    const concernDistWindowSq = concernDistWindow * concernDistWindow;
 
     // Both locationArray and concernLocationArray should be in the
     // format [ { "time": 123, "latitude": 12.34, "longitude": 34.56 }]
 
-    for (let loc of localArray) {
-      let timeMin = loc.time - concernTimeWindow;
-      let timeMax = loc.time + concernTimeWindow;
+    for (const loc of localArray) {
+      const timeMin = loc.time - concernTimeWindow;
+      const timeMax = loc.time + concernTimeWindow;
 
       let i = binarySearchForTime(concernArray, timeMin);
       if (i < 0) i = -(i + 1);
 
       while (i < concernArray.length && concernArray[i].time <= timeMax) {
         // Perform a simple Euclidian distance test
-        let deltaLat = (concernArray[i].latitude - loc.latitude) * ftPerLat;
-        let deltaLon = (concernArray[i].longitude - loc.longitude) * ftPerLon;
+        const deltaLat = (concernArray[i].latitude - loc.latitude) * ftPerLat;
+        const deltaLon = (concernArray[i].longitude - loc.longitude) * ftPerLon;
         // TODO: Scale ftPer factors based on lat to reduce projection error
 
-        let distSq = deltaLat * deltaLat + deltaLon * deltaLon;
+        const distSq = deltaLat * deltaLat + deltaLon * deltaLon;
         if (distSq < concernDistWindowSq) {
           // Crossed path.  Bin the count of encounters by days from today.
-          let longAgo = timeNow - loc.time;
-          let daysAgo = Math.round(longAgo / (1000 * 60 * 60 * 24));
+          const longAgo = timeNow - loc.time;
+          const daysAgo = Math.round(longAgo / (1000 * 60 * 60 * 24));
 
           dayBin[daysAgo] += 1;
         }
@@ -105,10 +98,9 @@ function normalizeData(arr) {
   //   * Values stored as strings instead of numbers
   //   * Extra info in the input
   //   * Improperly sorted data (can happen after an Import)
-  var result = [];
+  const result = [];
 
-  for (var i = 0; i < arr.length; i++) {
-    elem = arr[i];
+  for (const elem of arr) {
     if ('time' in elem && 'latitude' in elem && 'longitude' in elem) {
       result.push({
         time: Number(elem.time),
@@ -129,12 +121,13 @@ function binarySearchForTime(array, targetTime) {
   // Returns:
   //   value >= 0,   index of found item
   //   value < 0,    i where -(i+1) is the insertion point
-  var i = 0;
-  var n = array.length - 1;
+  let i = 0;
+  let n = array.length - 1;
 
   while (i <= n) {
-    var k = (n + i) >> 1;
-    var cmp = targetTime - array[k].time;
+    // eslint-disable-next-line no-bitwise
+    const k = (n + i) >> 1;
+    const cmp = targetTime - array[k].time;
 
     if (cmp > 0) {
       i = k + 1;

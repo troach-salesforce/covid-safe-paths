@@ -1,26 +1,20 @@
 import React, { Component } from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
+  ActivityIndicator,
   BackHandler,
   Dimensions,
-  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-
-import colors from '../constants/colors';
-import fontFamily from '../constants/fonts';
 import WebView from 'react-native-webview';
-import backArrow from './../assets/images/backArrow.png';
+import NavigationBarWrapper from '../components/NavigationBarWrapper';
+import fontFamily from '../constants/fonts';
 import { SearchAndImport } from '../helpers/GoogleTakeOutAutoImport';
-import languages from './../locales/languages';
+import languages from '../locales/languages';
+
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-
-import NavigationBarWrapper from '../components/NavigationBarWrapper';
 
 class ImportScreen extends Component {
   constructor(props) {
@@ -75,7 +69,7 @@ class ImportScreen extends Component {
               onLoad={() => this.hideSpinner()}
               // Reload once on error to workaround chromium regression for Android
               // Chromiumn Bug :: https://bugs.chromium.org/p/chromium/issues/detail?id=1023678
-              ref={ref => {
+              ref={(ref) => {
                 this.webView = ref;
               }}
               onError={() => {
@@ -85,7 +79,7 @@ class ImportScreen extends Component {
                 }
                 counter++;
               }}
-              renderError={errorName => {
+              renderError={(errorName) => {
                 if (counter >= 1) {
                   <View style={styles.sectionDescription}>
                     <Text>Error Occurred while importing file {errorName}</Text>
@@ -112,13 +106,6 @@ class ImportScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  // Container covers the entire screen
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
-  },
   subHeaderTitle: {
     textAlign: 'center',
     fontWeight: 'bold',
@@ -137,28 +124,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     width: '100%',
-  },
-
-  headerContainer: {
-    flexDirection: 'row',
-    height: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(189, 195, 199,0.6)',
-    alignItems: 'center',
-  },
-  backArrowTouchable: {
-    width: 60,
-    height: 60,
-    paddingTop: 21,
-    paddingLeft: 20,
-  },
-  backArrow: {
-    height: 18,
-    width: 18.48,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontFamily: fontFamily.primaryRegular,
   },
   sectionDescription: {
     fontSize: 16,

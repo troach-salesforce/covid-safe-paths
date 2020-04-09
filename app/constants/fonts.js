@@ -1,4 +1,4 @@
-import { isPlatformiOS } from './../Util';
+import { isPlatformiOS } from '../Util';
 
 const fontFamily = {
   primaryBold: 'IBMPlexSans-Bold',

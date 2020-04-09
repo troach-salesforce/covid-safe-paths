@@ -1,24 +1,31 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   check,
-  request,
-  PERMISSIONS,
-  RESULTS,
   checkNotifications,
+  PERMISSIONS,
+  request,
   requestNotifications,
+  RESULTS,
 } from 'react-native-permissions';
 import { SvgXml } from 'react-native-svg';
 import BackgroundImage from '../../assets/images/launchScreenBackground.png';
-import languages from '../../locales/languages';
-import ButtonWrapper from '../../components/ButtonWrapper';
-import Colors from '../../constants/colors';
 import IconDenied from '../../assets/svgs/permissionDenied';
 import IconGranted from '../../assets/svgs/permissionGranted';
 import IconUnknown from '../../assets/svgs/permissionUnknown';
-import { SetStoreData } from '../../helpers/General';
-import { isPlatformiOS } from '../../Util';
+import ButtonWrapper from '../../components/ButtonWrapper';
+import Colors from '../../constants/colors';
 import fontFamily from '../../constants/fonts';
+import { SetStoreData } from '../../helpers/General';
+import languages from '../../locales/languages';
+import { isPlatformiOS } from '../../Util';
 
 const width = Dimensions.get('window').width;
 const PermissionStatusEnum = {
@@ -27,7 +34,7 @@ const PermissionStatusEnum = {
   DENIED: 2,
 };
 
-const PermissionDescription = ({ title, status, ...props }) => {
+const PermissionDescription = ({ title, status }) => {
   let icon;
   switch (status) {
     case PermissionStatusEnum.UNKNOWN:
@@ -38,6 +45,8 @@ const PermissionDescription = ({ title, status, ...props }) => {
       break;
     case PermissionStatusEnum.DENIED:
       icon = IconDenied;
+      break;
+    default:
       break;
   }
   return (
@@ -89,6 +98,8 @@ class Onboarding extends Component {
               locationPermission: PermissionStatusEnum.DENIED,
             });
             break;
+          default:
+            break;
         }
       })
       .catch((error) => {
@@ -109,6 +120,8 @@ class Onboarding extends Component {
           this.setState({
             notificationPermission: PermissionStatusEnum.DENIED,
           });
+          break;
+        default:
           break;
       }
     });
@@ -136,6 +149,8 @@ class Onboarding extends Component {
             locationPermission: PermissionStatusEnum.DENIED,
           });
           break;
+        default:
+          break;
       }
     });
   }
@@ -153,6 +168,8 @@ class Onboarding extends Component {
           this.setState({
             notificationPermission: PermissionStatusEnum.DENIED,
           });
+          break;
+        default:
           break;
       }
     });
@@ -221,6 +238,7 @@ class Onboarding extends Component {
         </>
       );
     }
+    return null;
   }
 
   getButtonText() {
@@ -236,7 +254,11 @@ class Onboarding extends Component {
   render() {
     return (
       <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
-        <StatusBar barStyle='light-content' backgroundColor='transparent' translucent />
+        <StatusBar
+          barStyle='light-content'
+          backgroundColor='transparent'
+          translucent
+        />
 
         <View style={styles.mainContainer}>
           <View style={styles.contentContainer}>

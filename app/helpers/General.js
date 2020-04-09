@@ -10,11 +10,14 @@ import AsyncStorage from '@react-native-community/async-storage';
  */
 export async function GetStoreData(key, isString = true) {
   try {
-    let data = await AsyncStorage.getItem(key);
+    const data = await AsyncStorage.getItem(key);
 
     if (isString) {
       return data;
     }
+
+    // Allow default value assignment at caller
+    if (!data) return undefined;
 
     return JSON.parse(data);
   } catch (error) {
@@ -32,13 +35,12 @@ export async function GetStoreData(key, isString = true) {
  */
 export async function SetStoreData(key, item) {
   try {
-    //we want to wait for the Promise returned by AsyncStorage.setItem()
-    //to be resolved to the actual value before returning the value
-    if (typeof item !== 'string') {
-      item = JSON.stringify(item);
-    }
-
-    return await AsyncStorage.setItem(key, item);
+    // we want to wait for the Promise returned by AsyncStorage.setItem()
+    // to be resolved to the actual value before returning the value
+    return await AsyncStorage.setItem(
+      key,
+      typeof item === 'string' ? item : JSON.stringify(item),
+    );
   } catch (error) {
     console.log(error.message);
   }

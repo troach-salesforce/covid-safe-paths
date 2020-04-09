@@ -1,15 +1,14 @@
-import { GetStoreData, SetStoreData } from '../helpers/General';
-import { Alert } from 'react-native';
+import { Alert, NativeEventEmitter, NativeModules } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import UUIDGenerator from 'react-native-uuid-generator';
 import AndroidBLEAdvertiserModule from 'react-native-ble-advertiser';
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import UUIDGenerator from 'react-native-uuid-generator';
+import { GetStoreData, SetStoreData } from '../helpers/General';
 import { isPlatformAndroid, nowStr } from '../Util';
 
-var currentUUID = null;
-var onDeviceFound = null;
-var onBTStatusChange = null;
-var lastSeen = {};
+let currentUUID = null;
+let onDeviceFound = null;
+let onBTStatusChange = null;
+const lastSeen = {};
 
 const c5_MINS = 1000 * 60 * 5;
 const c28_DAYS = 1000 * 60 * 60 * 24 * 28;
@@ -22,16 +21,13 @@ const MANUFACTURER_DATA = [12, 23, 56];
  * Check if the contact is new in the last 5 mins.
  */
 function isNewContact(contact) {
-  var nowLocal = new Date().getTime();
-  if (
-    lastSeen[contact['uuid']] &&
-    lastSeen[contact['uuid']] > nowLocal - c5_MINS
-  ) {
-    //console.log('[Bluetooth]', nowStr(), currentUUID, 'Ignoring UUID for 5 mins:', contact['uuid']);
+  const nowLocal = new Date().getTime();
+  if (lastSeen[contact.uuid] && lastSeen[contact.uuid] > nowLocal - c5_MINS) {
+    // console.log('[Bluetooth]', nowStr(), currentUUID, 'Ignoring UUID for 5 mins:', contact['uuid']);
     return false; // needs a space of 5 mins to log again.
   }
 
-  lastSeen[contact['uuid']] = nowLocal;
+  lastSeen[contact.uuid] = nowLocal;
   return true;
 }
 
@@ -39,9 +35,9 @@ function isNewContact(contact) {
  * Select only the last 28 days of data.
  */
 function filterAfter(arrayIncludingTime, time) {
-  let curated = [];
+  const curated = [];
   for (let i = 0; i < arrayIncludingTime.length; i++) {
-    if (arrayIncludingTime[i]['time'] > time) {
+    if (arrayIncludingTime[i].time > time) {
       curated.push(arrayIncludingTime[i]);
     }
   }
@@ -50,22 +46,18 @@ function filterAfter(arrayIncludingTime, time) {
 
 function saveContact(contact) {
   // Persist this contact data in our local storage of time/uuid values
-  //console.log('[Bluetooth]', nowStr(), currentUUID, 'New Device Found', contact['uuid']);
+  // console.log('[Bluetooth]', nowStr(), currentUUID, 'New Device Found', contact['uuid']);
   if (isNewContact(contact)) {
-    GetStoreData('CONTACT_DATA', false).then(contactArray => {
-      if (!contactArray) {
-        contactArray = [];
-      }
-
+    GetStoreData('CONTACT_DATA', false).then((contactArray = []) => {
       // Always work in UTC, not the local time in the contactData
-      var nowUTC = new Date().toISOString();
-      var unixtimeUTC = Date.parse(nowUTC);
+      const nowUTC = new Date().toISOString();
+      const unixtimeUTC = Date.parse(nowUTC);
 
       // Curate the list of contacts, only keep the last 28 days
-      let curated = filterAfter(contactArray, unixtimeUTC - c28_DAYS);
+      const curated = filterAfter(contactArray, unixtimeUTC - c28_DAYS);
 
-      var uuid_time = {
-        uuid: contact['uuid'],
+      const uuid_time = {
+        uuid: contact.uuid,
         time: unixtimeUTC,
       };
       curated.push(uuid_time);
@@ -74,7 +66,7 @@ function saveContact(contact) {
         nowStr(),
         currentUUID,
         'Saving contact:',
-        contact['uuid'],
+        contact.uuid,
         curated.length,
       );
 
@@ -86,29 +78,25 @@ function saveContact(contact) {
 function saveMyUUID(me) {
   // Persist this contact data in our local storage of time/lat/lon values
 
-  GetStoreData('MY_UUIDs', false).then(myUUIDArray => {
-    if (!myUUIDArray) {
-      myUUIDArray = [];
-    }
-
+  GetStoreData('MY_UUIDs', false).then((myUUIDArray = []) => {
     // Always work in UTC, not the local time in the contactData
-    var nowUTC = new Date().toISOString();
-    var unixtimeUTC = Date.parse(nowUTC);
+    const nowUTC = new Date().toISOString();
+    const unixtimeUTC = Date.parse(nowUTC);
 
     // Curate the list of points, only keep the last 28 days
-    let curated = filterAfter(myUUIDArray, unixtimeUTC - c28_DAYS);
+    const curated = filterAfter(myUUIDArray, unixtimeUTC - c28_DAYS);
 
-    var uuid_time = {
-      uuid: me['uuid'],
+    const uuid_time = {
+      uuid: me.uuid,
       time: unixtimeUTC,
     };
 
     console.log(
       '[Bluetooth]',
       nowStr(),
-      me['uuid'],
+      me.uuid,
       'Saving myUUID:',
-      me['uuid'],
+      me.uuid,
       curated.length,
     );
     curated.push(uuid_time);
@@ -118,15 +106,15 @@ function saveMyUUID(me) {
 }
 
 function loadLastUUIDAndBroadcast() {
-  GetStoreData('MY_UUIDs', false).then(myUUIDArray => {
-    if (!myUUIDArray) {
+  GetStoreData('MY_UUIDs', false).then((myUUIDArray = []) => {
+    if (myUUIDArray.length) {
       console.log(
         '[Bluetooth]',
         nowStr(),
         myUUIDArray[myUUIDArray.length - 1].uuid,
         'Loading last uuid',
       );
-      var lastUUID = myUUIDArray[myUUIDArray.length - 1].uuid;
+      const lastUUID = myUUIDArray[myUUIDArray.length - 1].uuid;
       broadcast(lastUUID);
     } else {
       generateNewUUIDAndBroadcast();
@@ -134,100 +122,76 @@ function loadLastUUIDAndBroadcast() {
   });
 }
 
-function broadcast(currentUUID) {
-  if (!currentUUID) return; // does not allow to start without UUID
+function broadcast(uuid) {
+  if (!uuid) return; // does not allow to start without UUID
 
-  //console.log('[Bluetooth]', nowStr(), currentUUID, 'Broadcasting');
+  // console.log('[Bluetooth]', nowStr(), currentUUID, 'Broadcasting');
   AndroidBLEAdvertiserModule.setCompanyId(MANUFACTURER_ID);
-  AndroidBLEAdvertiserModule.broadcast(currentUUID, MANUFACTURER_DATA)
-    .then(success =>
+  AndroidBLEAdvertiserModule.broadcast(uuid, MANUFACTURER_DATA)
+    .then((success) =>
       console.log(
         '[Bluetooth]',
         nowStr(),
-        currentUUID,
+        uuid,
         'Broadcasting Sucessful',
         success,
       ),
     )
-    .catch(error =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        currentUUID,
-        'Broadcasting Error',
-        error,
-      ),
+    .catch((error) =>
+      console.log('[Bluetooth]', nowStr(), uuid, 'Broadcasting Error', error),
     );
 
-  //console.log('[Bluetooth]', nowStr(), currentUUID, "Starting Scanner");
+  // console.log('[Bluetooth]', nowStr(), currentUUID, "Starting Scanner");
   AndroidBLEAdvertiserModule.scan(MANUFACTURER_DATA, {})
-    .then(success =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        currentUUID,
-        'Scan Successful',
-        success,
-      ),
+    .then((success) =>
+      console.log('[Bluetooth]', nowStr(), uuid, 'Scan Successful', success),
     )
-    .catch(error =>
-      console.log('[Bluetooth]', nowStr(), currentUUID, 'Scan Error', error),
+    .catch((error) =>
+      console.log('[Bluetooth]', nowStr(), uuid, 'Scan Error', error),
     );
 }
 
-function stopBroadcast(currentUUID) {
-  if (!currentUUID) return; // does not allow to start without UUID
+function stopBroadcast(uuid) {
+  if (!uuid) return; // does not allow to start without UUID
 
-  //console.log('[Bluetooth]', nowStr(), currentUUID, 'Stopping Broadcast');
+  // console.log('[Bluetooth]', nowStr(), currentUUID, 'Stopping Broadcast');
   AndroidBLEAdvertiserModule.stopBroadcast()
-    .then(success =>
+    .then((success) =>
       console.log(
         '[Bluetooth]',
         nowStr(),
-        currentUUID,
+        uuid,
         'Stop Broadcast Successful',
         success,
       ),
     )
-    .catch(error =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        currentUUID,
-        'Stop Broadcast Error',
-        error,
-      ),
+    .catch((error) =>
+      console.log('[Bluetooth]', nowStr(), uuid, 'Stop Broadcast Error', error),
     );
 
-  //console.log('[Bluetooth]', nowStr(), currentUUID, "Stopping Scanning");
+  // console.log('[Bluetooth]', nowStr(), currentUUID, "Stopping Scanning");
   AndroidBLEAdvertiserModule.stopScan()
-    .then(success =>
+    .then((success) =>
       console.log(
         '[Bluetooth]',
         nowStr(),
-        currentUUID,
+        uuid,
         'Stop Scan Successful',
         success,
       ),
     )
-    .catch(error =>
-      console.log(
-        '[Bluetooth]',
-        nowStr(),
-        currentUUID,
-        'Stop Scan Error',
-        error,
-      ),
+    .catch((error) =>
+      console.log('[Bluetooth]', nowStr(), uuid, 'Stop Scan Error', error),
     );
 }
 
 function generateNewUUIDAndBroadcast() {
-  UUIDGenerator.getRandomUUID(uuid => {
+  UUIDGenerator.getRandomUUID((uuid) => {
     console.log('[Bluetooth]', nowStr(), currentUUID, 'Renewing this UUID');
     stopBroadcast(currentUUID);
 
     currentUUID = uuid;
-    saveMyUUID({ uuid: uuid });
+    saveMyUUID({ uuid });
 
     broadcast(currentUUID);
   });
@@ -265,7 +229,7 @@ export default class BroadcastingServices {
       );
       onBTStatusChange = eventEmitter.addListener(
         'onBTStatusChange',
-        status => {
+        (status) => {
           console.log(
             '[Bluetooth]',
             nowStr(),
@@ -279,7 +243,7 @@ export default class BroadcastingServices {
       );
 
       AndroidBLEAdvertiserModule.getAdapterState()
-        .then(result => {
+        .then((result) => {
           console.log(
             '[Bluetooth]',
             nowStr(),
@@ -293,7 +257,7 @@ export default class BroadcastingServices {
             BroadcastingServices.askBTActive();
           }
         })
-        .catch(error => {
+        .catch(() => {
           console.log('[Bluetooth]', nowStr(), currentUUID, 'BT Not Enabled');
         });
     }
@@ -307,7 +271,7 @@ export default class BroadcastingServices {
       }
 
       AndroidBLEAdvertiserModule.getAdapterState()
-        .then(result => {
+        .then((result) => {
           console.log(
             '[Bluetooth]',
             nowStr(),
@@ -319,7 +283,7 @@ export default class BroadcastingServices {
             BroadcastingServices.stopAndClearCallbacks();
           }
         })
-        .catch(error => {
+        .catch(() => {
           console.log('[Bluetooth]', nowStr(), currentUUID, 'BT Not Enabled');
         });
     }
@@ -335,7 +299,7 @@ export default class BroadcastingServices {
     const eventEmitter = new NativeEventEmitter(
       NativeModules.AndroidBLEAdvertiserModule,
     );
-    onDeviceFound = eventEmitter.addListener('onDeviceFound', event => {
+    onDeviceFound = eventEmitter.addListener('onDeviceFound', (event) => {
       console.log('[Bluetooth]', nowStr(), currentUUID, 'New Device', event);
       if (event.serviceUuids && event.serviceUuids.length > 0)
         saveContact({ uuid: event.serviceUuids[0] });
@@ -350,7 +314,7 @@ export default class BroadcastingServices {
   }
 
   static stopAndClearCallbacks() {
-    //console.log('[Bluetooth]', nowStr(), currentUUID, 'Stopping Bluetooth');
+    // console.log('[Bluetooth]', nowStr(), currentUUID, 'Stopping Bluetooth');
     stopBroadcast(currentUUID);
 
     if (onDeviceFound) {

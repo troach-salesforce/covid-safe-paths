@@ -1,21 +1,18 @@
 /**
  * Checks the download folder, unzips and imports all data from Google TakeOut
  */
-import { unzip, subscribe } from 'react-native-zip-archive';
-import { MergeJSONWithLocalData } from '../helpers/GoogleData';
+import { subscribe, unzip } from 'react-native-zip-archive';
+import { MergeJSONWithLocalData } from './GoogleData';
 
 // require the module
-let RNFS = require('react-native-fs');
-
-// unzipping progress component.
-let progress;
+const RNFS = require('react-native-fs');
 
 // Google Takout File Format.
-let takeoutZip = /^takeout[\w,\s-]+\.zip$/gm;
+const takeoutZip = /^takeout[\w,\s-]+\.zip$/gm;
 
 // Gets Path of the location file for the current month.
 function GetFileName() {
-  let monthNames = [
+  const monthNames = [
     'January',
     'February',
     'March',
@@ -30,24 +27,17 @@ function GetFileName() {
     'December',
   ];
 
-  let year = new Date().getFullYear();
-  // let month = monthNames[new Date().getMonth()].toUpperCase();
-  return (
-    RNFS.DownloadDirectoryPath +
-    '/Takeout/Location History/Semantic Location History/' +
-    year +
-    '/' +
-    year +
-    '_MARCH.json'
-  );
+  const year = new Date().getFullYear();
+  const month = monthNames[new Date().getMonth()].toUpperCase();
+  return `${RNFS.DownloadDirectoryPath}/Takeout/Location History/Semantic Location History/${year}/${year}_${month}.json`;
 }
 
 export async function SearchAndImport() {
-  //googleLocationJSON
+  // googleLocationJSON
   console.log('Auto-import start');
 
   // UnZip Progress Bar Log.
-  progress = subscribe(
+  const progressSub = subscribe(
     ({
       progress,
       //  filePath
@@ -64,14 +54,11 @@ export async function SearchAndImport() {
   }
 
   RNFS.readDir(RNFS.DownloadDirectoryPath)
-    .then(result => {
+    .then((result) => {
       console.log('Checking Downloads Folder');
 
       // Looking for takeout*.zip files and unzipping them.
-      result.map(function(
-        file,
-        //index
-      ) {
+      result.forEach((file) => {
         if (takeoutZip.test(file.name)) {
           console.log(
             `Found Google Takeout {file.name} at {file.path}`,
@@ -79,30 +66,30 @@ export async function SearchAndImport() {
           );
 
           unzip(file.path, RNFS.DownloadDirectoryPath)
-            .then(path => {
+            .then((path) => {
               console.log(`Unzip Completed for ${path} and ${file.path}`);
 
               RNFS.readFile(GetFileName())
-                .then(result => {
+                .then(() => {
                   console.log('Opened file');
 
                   MergeJSONWithLocalData(JSON.parse(result));
-                  progress.remove();
+                  progressSub.remove();
                 })
-                .catch(err => {
+                .catch((err) => {
                   console.log(err.message, err.code);
-                  progress.remove();
+                  progressSub.remove();
                 });
             })
-            .catch(error => {
+            .catch((error) => {
               console.log(error);
-              progress.remove();
+              progressSub.remove();
             });
         }
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err.message, err.code);
-      progress.remove();
+      progressSub.remove();
     });
 }

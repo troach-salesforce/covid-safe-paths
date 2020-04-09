@@ -1,39 +1,10 @@
-import React, { Component } from 'react';
-
-import {
-  View,
-  Text,
-  Dimensions,
-  StyleSheet,
-  ImageBackground,
-  StatusBar,
-} from 'react-native';
-import {
-  check,
-  request,
-  PERMISSIONS,
-  RESULTS,
-  checkNotifications,
-  requestNotifications,
-} from 'react-native-permissions';
-import languages from '../locales/languages';
-import ButtonWrapper from '../components/ButtonWrapper';
-import Colors from '../constants/colors';
-import { SetStoreData } from '../helpers/General';
-import MapView, {
-  Marker,
-  PROVIDER_GOOGLE,
-  Polyline,
-  Circle,
-} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
-import { isPlatformiOS } from './../Util';
+import React, { Component } from 'react';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import MapView, { Circle, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { SvgXml } from 'react-native-svg';
-import fontFamily from '../constants/fonts';
-import LocationServices, { LocationData } from '../services/LocationService';
-
-const width = Dimensions.get('window').width;
+import Colors from '../constants/colors';
+import { LocationData } from '../services/LocationService';
 
 const InitialRegion = {
   latitude: 35.692863,
@@ -63,6 +34,7 @@ const BSDateSectionRow = ({ prefixTitle, title }) => {
 
 class MapLocation extends Component {
   map = React.createRef();
+
   bottomSheet = React.createRef();
 
   constructor(props) {
@@ -80,8 +52,8 @@ class MapLocation extends Component {
     };
     Geolocation.getCurrentPosition(
       this.getCurrentLocation.bind(this),
-      error => {
-        console.log('get current position error: ' + JSON.stringify(error));
+      (error) => {
+        console.log(`get current position error: ${JSON.stringify(error)}`);
       },
     );
 
@@ -132,7 +104,7 @@ class MapLocation extends Component {
   }
 
   renderContent() {
-    const covertToDate = time => {
+    const covertToDate = (time) => {
       const monthNames = [
         'January',
         'February',
@@ -155,7 +127,7 @@ class MapLocation extends Component {
     };
     const dates = [];
     const points = {};
-    for (let location of this.state.fullLocationData) {
+    for (const location of this.state.fullLocationData) {
       const formattedDate = covertToDate(location.time);
       if (dates.length !== 0 && formattedDate === dates[dates.length - 1]) {
         points[formattedDate].push(location);
@@ -168,12 +140,12 @@ class MapLocation extends Component {
     return (
       <View style={styles.bsMainContainer}>
         <Text>some content</Text>
-        <BSDateSectionRow prefixTitle={'test'} title={'test'} />
+        <BSDateSectionRow prefixTitle='test' title='test' />
       </View>
     );
   }
 
-  renderHeader() {
+  renderHeader = () => {
     return (
       <View style={styles.bsHeader}>
         <View style={styles.bsHeaderIndicatorContainer}>
@@ -181,7 +153,7 @@ class MapLocation extends Component {
         </View>
       </View>
     );
-  }
+  };
 
   render() {
     return (
@@ -203,7 +175,7 @@ class MapLocation extends Component {
               strokeColor={Colors.MAP_LINE_STROKE}
               strokeWidth={1}
             />
-            {this.state.locationDataForCircle.map(circle => (
+            {this.state.locationDataForCircle.map((circle) => (
               <Circle
                 key={circle.key}
                 center={circle.center}

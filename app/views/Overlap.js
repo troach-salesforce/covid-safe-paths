@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  BackHandler,
+  Image,
+  Linking,
   SafeAreaView,
   StyleSheet,
-  Linking,
-  View,
   Text,
-  Image,
   TouchableOpacity,
-  BackHandler,
+  View,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import RNFetchBlob from 'rn-fetch-blob';
-import Colors from '../constants/colors';
-import { GetStoreData } from '../helpers/General';
-import greenMarker from '../assets/images/user-green.png';
 import backArrow from '../assets/images/backArrow.png';
-import languages from '../locales/languages';
-import CustomCircle from '../helpers/customCircle';
+import greenMarker from '../assets/images/user-green.png';
+import Colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
+import CustomCircle from '../helpers/customCircle';
+import { GetStoreData } from '../helpers/General';
+import languages from '../locales/languages';
 
 // This data source was published in the Lancet, originally mentioned in
 // this article:
@@ -29,8 +29,12 @@ import fontFamily from '../constants/fonts';
 const public_data =
   'https://raw.githubusercontent.com/beoutbreakprepared/nCoV2019/master/latest_data/latestdata.csv';
 const show_button_text = languages.t('label.show_overlap');
-const overlap_true_button_text = languages.t('label.overlap_found_button_label');
-const no_overlap_button_text = languages.t('label.overlap_no_results_button_label');
+const overlap_true_button_text = languages.t(
+  'label.overlap_found_button_label',
+);
+const no_overlap_button_text = languages.t(
+  'label.overlap_no_results_button_label',
+);
 const INITIAL_REGION = {
   latitude: 36.56,
   longitude: 20.39,
@@ -58,7 +62,7 @@ function distance(lat1, lon1, lat2, lon2) {
   return dist * 1.609344;
 }
 
-function OverlapScreen() {
+function OverlapScreen(props) {
   const [markers, setMarkers] = useState([]);
   const [circles, setCircles] = useState([]);
   const [showButton, setShowButton] = useState({
@@ -105,7 +109,8 @@ function OverlapScreen() {
         if (locationArray !== null) {
           const { latitude, longitude } = locationArray.slice(-1)[0];
 
-          mapView.current && mapView.current.animateCamera({ center: { latitude, longitude } });
+          mapView.current &&
+            mapView.current.animateCamera({ center: { latitude, longitude } });
           setInitialRegion({
             latitude,
             longitude,
@@ -245,11 +250,11 @@ function OverlapScreen() {
   }
 
   function backToMain() {
-    this.props.navigation.goBack();
+    props.navigation.goBack();
   }
 
   function handleBackPress() {
-    this.props.navigation.goBack();
+    props.navigation.goBack();
     return true;
   }
 
@@ -258,7 +263,7 @@ function OverlapScreen() {
       getInitialState();
       populateMarkers();
       return () => {};
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -274,10 +279,14 @@ function OverlapScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.backArrowTouchable} onPress={backToMain}>
+        <TouchableOpacity
+          style={styles.backArrowTouchable}
+          onPress={backToMain}>
           <Image style={styles.backArrow} source={backArrow} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{languages.t('label.overlap_title')}</Text>
+        <Text style={styles.headerTitle}>
+          {languages.t('label.overlap_title')}
+        </Text>
       </View>
       <MapView
         ref={mapView}
@@ -314,7 +323,9 @@ function OverlapScreen() {
           {/* If no overlap found, change button text to say so. Temporary solution, replace with something more robust */}
           <Text style={styles.buttonText}>{languages.t(showButton.text)}</Text>
         </TouchableOpacity>
-        <Text style={styles.sectionDescription}>{languages.t('label.overlap_para_1')}</Text>
+        <Text style={styles.sectionDescription}>
+          {languages.t('label.overlap_para_1')}
+        </Text>
       </View>
       <View style={styles.footer}>
         <Text
@@ -322,7 +333,9 @@ function OverlapScreen() {
             styles.sectionFooter,
             { textAlign: 'center', paddingTop: 15, color: Colors.BLUE_LINK },
           ]}
-          onPress={() => Linking.openURL('https://github.com/beoutbreakprepared/nCoV2019')}>
+          onPress={() =>
+            Linking.openURL('https://github.com/beoutbreakprepared/nCoV2019')
+          }>
           {languages.t('label.nCoV2019_url_info')}{' '}
         </Text>
       </View>
