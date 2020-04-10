@@ -262,8 +262,10 @@ function OverlapScreen(props) {
   );
 
   useEffect(() => {
+    if (typeof BackHandler.addEventListener !== 'function') return () => {};
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
     return function cleanup() {
+      if (typeof BackHandler.removeEventListener !== 'function') return;
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
     };
   });

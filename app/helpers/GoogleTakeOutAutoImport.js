@@ -59,6 +59,7 @@ export async function SearchAndImport() {
 
       // Looking for takeout*.zip files and unzipping them.
       result.forEach((file) => {
+        console.log(file.path);
         if (takeoutZip.test(file.name)) {
           console.log(`Found Google Takeout {file.name} at {file.path}`, file.name);
 

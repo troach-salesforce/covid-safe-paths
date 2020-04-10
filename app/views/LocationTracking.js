@@ -404,11 +404,11 @@ class LocationTracking extends Component {
   getSubText() {
     switch (this.state.currentState) {
       case StateEnum.NO_CONTACT:
-        return 'label.home_no_contact_subtext';
+        return languages.t('label.home_no_contact_subtext');
       case StateEnum.AT_RISK:
-        return 'label.home_at_risk_subtext';
+        return languages.t('label.home_at_risk_subtext');
       case StateEnum.UNKNOWN:
-        return 'label.home_unknown_subtext';
+        return languages.t('label.home_unknown_subtext');
       default:
         return '';
     }
@@ -419,7 +419,7 @@ class LocationTracking extends Component {
       case StateEnum.NO_CONTACT:
         return null;
       case StateEnum.AT_RISK:
-        return 'label.home_at_risk_subsubtext';
+        return languages.t('label.home_at_risk_subsubtext');
       case StateEnum.UNKNOWN:
         return null;
       default:
@@ -439,12 +439,12 @@ class LocationTracking extends Component {
       return null;
     }
     if (this.state.currentState === StateEnum.AT_RISK) {
-      buttonLabel = 'label.home_next_steps';
+      buttonLabel = languages.t('label.home_next_steps');
       buttonFunction = () => {
         this.props.navigation.navigate('NotificationScreen');
       };
     } else if (this.state.currentState === StateEnum.UNKNOWN) {
-      buttonLabel = 'label.home_enable_location';
+      buttonLabel = languages.t('label.home_enable_location');
       buttonFunction = () => {
         openSettings();
       };
@@ -452,7 +452,7 @@ class LocationTracking extends Component {
     return (
       <View style={styles.buttonContainer}>
         <ButtonWrapper
-          title={languages.t(buttonLabel)}
+          title={buttonLabel}
           onPress={() => {
             buttonFunction();
           }}
@@ -475,8 +475,8 @@ class LocationTracking extends Component {
         <View style={styles.mainContainer}>
           <View style={styles.contentContainer}>
             {this.getMainText()}
-            <Text style={styles.subheaderText}>{languages.t(this.getSubText())}</Text>
-            <Text style={styles.subsubheaderText}>{languages.t(this.getSubSubText())}</Text>
+            <Text style={styles.subheaderText}>{this.getSubText()}</Text>
+            <Text style={styles.subsubheaderText}>{this.getSubSubText()}</Text>
             {this.getCTAIfNeeded()}
           </View>
         </View>

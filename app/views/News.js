@@ -45,7 +45,6 @@ class NewsScreen extends Component {
   }
 
   _renderItem = (item) => {
-    console.log('Item', item);
     return (
       <View style={styles.singleNews}>
         <View style={styles.singleNewsHead}>
@@ -74,9 +73,7 @@ class NewsScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
 
     GetStoreData('AUTHORITY_NEWS')
-      .then((name_news) => {
-        console.log('name_news:', name_news);
-
+      .then(() => {
         // Bring in news from the various authorities.  This is
         // pulled down from the web when you subscribe to an Authority
         // on the Settings page.
@@ -89,7 +86,6 @@ class NewsScreen extends Component {
         });
         arr.push(this.state.default_news);
 
-        console.log('name_news:', arr);
         this.setState({
           newsUrls: arr,
         });
@@ -102,7 +98,6 @@ class NewsScreen extends Component {
   }
 
   render() {
-    console.log('News URL -', this.state.newsUrls);
     return (
       <LinearGradient
         start={{ x: 0, y: 0 }}

@@ -69,7 +69,8 @@ Button.propTypes = {
   buttonColor: PropTypes.string,
   bgColor: PropTypes.string,
   toBgColor: PropTypes.string,
-  titleStyle: ViewPropTypes.style,
+  // eslint-disable-next-line react/forbid-prop-types
+  titleStyle: PropTypes.any,
   buttonStyle: ViewPropTypes.style,
   borderColor: PropTypes.string,
 };
