@@ -5,7 +5,7 @@
   "scripts": {
     "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('You must use Yarn to install, not NPM')\"",
     "install:pod": "cd ios && pod install",
-    "postinstall": "patch-package; npx react-native-jetifier",
+    "postinstall": "patch-package; yarn react-native-jetifier",
     "postversion": "react-native-version",
     "format:all": "prettier --write ./app/**/*.js",
     "android": "react-native run-android",
