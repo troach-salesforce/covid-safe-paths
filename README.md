@@ -52,6 +52,13 @@ Once created you will need to add it to two different places in the project. One
 * Android - open `android/app/src/main/AndroidManifest.xml`and search for `com.google.android.geo.API_KEY`. Add your key to the `android:value` property.
 * iOS - open `ios/SafePaths/AppDelegate.m` and search for `GMSServices provideAPIKey` and replace line with `[GMSServices provideAPIKey:@"YOUR_API_KEY"];`
 
+### iOS Configuration - First Time Setup
+
+1. pod install in `ios` directory
+2. Open `.workspace` file in the iOS directory and run `build`
+3. If you have any trouble with packages not round, try `react-native link` from project directory.
+4. Look at running commands below.
+
 ## Running
 
 Install modules:

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
@@ -10,7 +9,6 @@ import {
   FlatList,
   Alert,
   TextInput,
-  Dimensions,
 } from 'react-native';
 import Yaml from 'js-yaml';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -22,21 +20,18 @@ import {
   renderers,
   withMenuContext,
 } from 'react-native-popup-menu';
-const { SlideInMenu } = renderers;
 import { GetStoreData, SetStoreData } from '../helpers/General';
-import colors from '../constants/colors';
 import Colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
-import backArrow from './../assets/images/backArrow.png';
-import closeIcon from './../assets/images/closeIcon.png';
-import saveIcon from './../assets/images/saveIcon.png';
+import closeIcon from '../assets/images/closeIcon.png';
+import saveIcon from '../assets/images/saveIcon.png';
 import languages from '../locales/languages';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
 
+const { SlideInMenu } = renderers;
+
 const authoritiesListURL =
   'https://raw.githubusercontent.com/tripleblindmarket/safe-places/develop/healthcare-authorities.yaml';
-
-const width = Dimensions.get('window').width;
 
 class ChooseProviderScreen extends Component {
   constructor(props) {
@@ -64,7 +59,7 @@ class ChooseProviderScreen extends Component {
     this.fetchAuthoritiesList();
 
     // Update user settings state from async storage
-    GetStoreData('AUTHORITY_SOURCE_SETTINGS', false).then(result => {
+    GetStoreData('AUTHORITY_SOURCE_SETTINGS', false).then((result) => {
       if (result !== null) {
         console.log('Retrieving settings from async storage:');
         console.log(result);
@@ -89,24 +84,24 @@ class ChooseProviderScreen extends Component {
         fileCache: true,
       })
         .fetch('GET', authoritiesListURL, {
-          //some headers ..
+          // some headers ..
         })
-        .then(result => {
-          RNFetchBlob.fs.readFile(result.path(), 'utf8').then(list => {
+        .then((result) => {
+          RNFetchBlob.fs.readFile(result.path(), 'utf8').then((list) => {
             // If unable to load the file, change state to display error in appropriate menu
-            let parsedFile = Yaml.safeLoad(list).Authorities;
-            {
-              parsedFile !== undefined
-                ? this.setState({
-                    authoritiesList: parsedFile,
-                  })
-                : this.setState({
-                    authoritiesList: [
-                      {
-                        'Unable to load authorities list': [{ url: 'No URL' }],
-                      },
-                    ],
-                  });
+            const parsedFile = Yaml.safeLoad(list).Authorities;
+            if (parsedFile !== undefined) {
+              this.setState({
+                authoritiesList: parsedFile,
+              });
+            } else {
+              this.setState({
+                authoritiesList: [
+                  {
+                    'Unable to load authorities list': [{ url: 'No URL' }],
+                  },
+                ],
+              });
             }
           });
         });
@@ -116,27 +111,22 @@ class ChooseProviderScreen extends Component {
   }
 
   // Add selected authorities to state, for display in the FlatList
-  addAuthorityToState(authority) {
-    let authorityIndex = this.state.authoritiesList.findIndex(
-      x => Object.keys(x)[0] === authority,
+  addAuthorityToState(prevState, authority) {
+    const authorityIndex = prevState.authoritiesList.findIndex(
+      (x) => Object.keys(x)[0] === authority,
     );
 
-    if (
-      this.state.selectedAuthorities.findIndex(x => x.key === authority) === -1
-    ) {
+    if (this.state.selectedAuthorities.findIndex((x) => x.key === authority) === -1) {
       this.setState(
         {
-          selectedAuthorities: this.state.selectedAuthorities.concat({
+          selectedAuthorities: prevState.selectedAuthorities.concat({
             key: authority,
-            url: this.state.authoritiesList[authorityIndex][authority][0].url,
+            url: prevState.authoritiesList[authorityIndex][authority][0].url,
           }),
         },
         () => {
           // Add current settings state to async storage.
-          SetStoreData(
-            'AUTHORITY_SOURCE_SETTINGS',
-            this.state.selectedAuthorities,
-          );
+          SetStoreData('AUTHORITY_SOURCE_SETTINGS', this.state.selectedAuthorities);
         },
       );
     } else {
@@ -144,17 +134,16 @@ class ChooseProviderScreen extends Component {
     }
   }
 
-  addCustomUrlToState(urlInput) {
+  addCustomUrlToState(prevState) {
+    const urlInput = prevState.urlText;
     if (urlInput === '') {
       console.log('URL input was empty, not saving');
-    } else if (
-      this.state.selectedAuthorities.findIndex(x => x.url === urlInput) != -1
-    ) {
+    } else if (prevState.selectedAuthorities.findIndex((x) => x.url === urlInput) !== -1) {
       console.log('URL input was duplicate, not saving');
     } else {
       this.setState(
         {
-          selectedAuthorities: this.state.selectedAuthorities.concat({
+          selectedAuthorities: prevState.selectedAuthorities.concat({
             key: urlInput,
             url: urlInput,
           }),
@@ -163,16 +152,13 @@ class ChooseProviderScreen extends Component {
         },
         () => {
           // Add current settings state to async storage.
-          SetStoreData(
-            'AUTHORITY_SOURCE_SETTINGS',
-            this.state.selectedAuthorities,
-          );
+          SetStoreData('AUTHORITY_SOURCE_SETTINGS', prevState.selectedAuthorities);
         },
       );
     }
   }
 
-  removeAuthorityFromState(authority) {
+  removeAuthorityFromState(prevState, authority) {
     Alert.alert(
       languages.t('label.authorities_removal_alert_title'),
       languages.t('label.authorities_removal_alert_desc'),
@@ -185,21 +171,16 @@ class ChooseProviderScreen extends Component {
         {
           text: languages.t('label.authorities_removal_alert_proceed'),
           onPress: () => {
-            let removalIndex = this.state.selectedAuthorities.indexOf(
-              authority,
-            );
+            const removalIndex = this.state.selectedAuthorities.indexOf(authority);
             this.state.selectedAuthorities.splice(removalIndex, 1);
 
             this.setState(
               {
-                selectedAuthorities: this.state.selectedAuthorities,
+                selectedAuthorities: prevState.selectedAuthorities,
               },
               () => {
                 // Add current settings state to async storage.
-                SetStoreData(
-                  'AUTHORITY_SOURCE_SETTINGS',
-                  this.state.selectedAuthorities,
-                );
+                SetStoreData('AUTHORITY_SOURCE_SETTINGS', this.state.selectedAuthorities);
               },
             );
           },
@@ -215,16 +196,12 @@ class ChooseProviderScreen extends Component {
         title={languages.t('label.choose_provider_title')}
         onBackPress={this.backToMain.bind(this)}>
         <View style={styles.main}>
-          <Text style={styles.headerTitle}>
-            {languages.t('label.authorities_title')}
-          </Text>
-          <Text style={styles.sectionDescription}>
-            {languages.t('label.authorities_desc')}
-          </Text>
+          <Text style={styles.headerTitle}>{languages.t('label.authorities_title')}</Text>
+          <Text style={styles.sectionDescription}>{languages.t('label.authorities_desc')}</Text>
         </View>
 
         <View style={styles.listContainer}>
-          {Object.keys(this.state.selectedAuthorities).length == 0 ? (
+          {Object.keys(this.state.selectedAuthorities).length === 0 ? (
             <>
               <Text
                 style={
@@ -238,13 +215,9 @@ class ChooseProviderScreen extends Component {
                 }>
                 {languages.t('label.authorities_no_sources')}
               </Text>
-              <View
-                style={[
-                  styles.flatlistRowView,
-                  { display: this.state.displayUrlEntry },
-                ]}>
+              <View style={[styles.flatlistRowView, { display: this.state.displayUrlEntry }]}>
                 <TextInput
-                  onChangeText={text => {
+                  onChangeText={(text) => {
                     this.setState({
                       urlText: text,
                     });
@@ -252,28 +225,19 @@ class ChooseProviderScreen extends Component {
                   value={this.state.urlText}
                   autoFocus={this.state.urlEntryInProgress}
                   style={[styles.item, styles.textInput]}
-                  placeholder={languages.t(
-                    'label.authorities_input_placeholder',
-                  )}
-                  onSubmitEditing={() =>
-                    this.addCustomUrlToState(this.state.urlText)
-                  }
+                  placeholder={languages.t('label.authorities_input_placeholder')}
+                  onSubmitEditing={() => this.addCustomUrlToState(this.state)}
                 />
-                <TouchableOpacity
-                  onPress={() => this.addCustomUrlToState(this.state.urlText)}>
+                <TouchableOpacity onPress={() => this.addCustomUrlToState(this.state)}>
                   <Image source={saveIcon} style={styles.saveIcon} />
                 </TouchableOpacity>
               </View>
             </>
           ) : (
             <>
-              <View
-                style={[
-                  styles.flatlistRowView,
-                  { display: this.state.displayUrlEntry },
-                ]}>
+              <View style={[styles.flatlistRowView, { display: this.state.displayUrlEntry }]}>
                 <TextInput
-                  onChangeText={text => {
+                  onChangeText={(text) => {
                     this.setState({
                       urlText: text,
                     });
@@ -282,12 +246,9 @@ class ChooseProviderScreen extends Component {
                   autoFocus={this.state.urlEntryInProgress}
                   style={[styles.item, styles.textInput]}
                   placeholder='Paste your URL here'
-                  onSubmitEditing={() =>
-                    this.addCustomUrlToState(this.state.urlText)
-                  }
+                  onSubmitEditing={() => this.addCustomUrlToState(this.state)}
                 />
-                <TouchableOpacity
-                  onPress={() => this.addCustomUrlToState(this.state.urlText)}>
+                <TouchableOpacity onPress={() => this.addCustomUrlToState(this.state)}>
                   <Image source={saveIcon} style={styles.saveIcon} />
                 </TouchableOpacity>
               </View>
@@ -297,7 +258,7 @@ class ChooseProviderScreen extends Component {
                   <View style={styles.flatlistRowView}>
                     <Text style={styles.item}>{item.key}</Text>
                     <TouchableOpacity
-                      onPress={() => this.removeAuthorityFromState(item)}>
+                      onPress={() => this.removeAuthorityFromState(this.state, item)}>
                       <Image source={closeIcon} style={styles.closeIcon} />
                     </TouchableOpacity>
                   </View>
@@ -314,9 +275,7 @@ class ChooseProviderScreen extends Component {
           <MenuTrigger>
             <TouchableOpacity
               style={styles.startLoggingButtonTouchable}
-              onPress={() =>
-                this.props.ctx.menuActions.openMenu('AuthoritiesMenu')
-              }
+              onPress={() => this.props.ctx.menuActions.openMenu('AuthoritiesMenu')}
               disabled={this.state.urlEditInProgress}>
               <Text style={styles.startLoggingButtonText}>
                 {languages.t('label.authorities_add_button_label')}
@@ -326,15 +285,15 @@ class ChooseProviderScreen extends Component {
           <MenuOptions>
             {this.state.authoritiesList === undefined
               ? null
-              : this.state.authoritiesList.map(item => {
-                  let name = Object.keys(item)[0];
-                  let key = this.state.authoritiesList.indexOf(item);
+              : this.state.authoritiesList.map((item) => {
+                  const name = Object.keys(item)[0];
+                  const key = this.state.authoritiesList.indexOf(item);
 
                   return (
                     <MenuOption
                       key={key}
                       onSelect={() => {
-                        this.addAuthorityToState(name);
+                        this.addAuthorityToState(this.state, name);
                       }}
                       disabled={this.state.authoritiesList.length === 1}>
                       <Text style={styles.menuOptionText}>{name}</Text>
@@ -348,9 +307,7 @@ class ChooseProviderScreen extends Component {
                   urlEntryInProgress: true,
                 });
               }}>
-              <Text style={styles.menuOptionText}>
-                {languages.t('label.authorities_add_url')}
-              </Text>
+              <Text style={styles.menuOptionText}>{languages.t('label.authorities_add_url')}</Text>
             </MenuOption>
           </MenuOptions>
         </Menu>
@@ -360,14 +317,6 @@ class ChooseProviderScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  // Container covers the entire screen
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
-  },
   main: {
     flex: 2,
     flexDirection: 'column',
@@ -385,90 +334,12 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '96%',
     alignSelf: 'center',
-    backgroundColor: colors.WHITE,
-  },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
-  },
-  valueName: {
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  value: {
-    fontSize: 20,
-    fontWeight: '200',
-  },
-  startLoggingButtonTouchable: {
-    borderRadius: 12,
-    backgroundColor: '#665eff',
-    height: 52,
-    alignSelf: 'center',
-    width: '79%',
-    justifyContent: 'center',
-  },
-  startLoggingButtonText: {
-    fontFamily: fontFamily.primaryBold,
-    fontSize: 14,
-    lineHeight: 19,
-    letterSpacing: 0,
-    textAlign: 'center',
-    color: '#ffffff',
-  },
-
-  buttonTouchable: {
-    borderRadius: 12,
-    backgroundColor: '#665eff',
-    height: 52,
-    alignSelf: 'center',
-    width: width * 0.7866,
-    marginTop: 30,
-    justifyContent: 'center',
-  },
-  buttonText: {
-    fontFamily: fontFamily.primaryBold,
-    fontSize: 14,
-    lineHeight: 19,
-    letterSpacing: 0,
-    textAlign: 'center',
-    color: '#ffffff',
-  },
-  mainText: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: '400',
-    textAlignVertical: 'center',
-    padding: 20,
-  },
-  smallText: {
-    fontSize: 10,
-    lineHeight: 24,
-    fontWeight: '400',
-    textAlignVertical: 'center',
-    padding: 20,
+    backgroundColor: Colors.WHITE,
   },
   headerTitle: {
     fontSize: 24,
     fontFamily: fontFamily.primaryBold,
     color: Colors.VIOLET_TEXT,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(189, 195, 199,0.6)',
-    alignItems: 'center',
-  },
-  backArrowTouchable: {
-    width: 60,
-    height: 60,
-    paddingTop: 21,
-    paddingLeft: 20,
-  },
-  backArrow: {
-    height: 18,
-    width: 18.48,
   },
   sectionDescription: {
     fontSize: 18,
@@ -482,14 +353,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.primaryRegular,
     fontSize: 14,
     padding: 10,
-  },
-  flatlistRowView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 7,
-    paddingBottom: 5,
-    borderBottomWidth: 1,
-    borderColor: '#999999',
   },
   item: {
     fontFamily: fontFamily.primaryRegular,

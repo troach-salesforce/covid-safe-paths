@@ -20,15 +20,15 @@ import ht from './ht.json';
 // Set up as a function so first onboarding screen can also update
 // ...from async language override setting
 export function findUserLang(callback) {
-  let userLang = undefined;
-  getLanguages().then(languages => {
+  let userLang;
+  getLanguages().then((languages) => {
     userLang = languages[0].split('-')[0]; // ['en-US' will become 'en']
 
     // If the user specified a language override, use it instead
-    GetStoreData('LANG_OVERRIDE').then(res => {
+    GetStoreData('LANG_OVERRIDE').then((res) => {
       if (typeof res === 'string') {
-        console.log('Found user language override:');
-        console.log(res);
+        // console.log('Found user language override:');
+        // console.log(res);
         userLang = res;
         i18next.changeLanguage(res);
       } else {

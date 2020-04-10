@@ -1,30 +1,19 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  BackHandler,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, BackHandler } from 'react-native';
+import { SvgXml } from 'react-native-svg';
+import languages from '../locales/languages';
+import ButtonWrapper from '../components/ButtonWrapper';
+import NavigationBarWrapper from '../components/NavigationBarWrapper';
+import Colors from '../constants/colors';
+import fontFamily from '../constants/fonts';
+import googleMapsIcon from '../assets/svgs/google-maps-logo';
 
 // This is the definitive listing of registered Healthcare Authorities.  To
 // register, just submit a PR against that list on Github.  Users are also
 // free to type in a non-official authority.
 //
-const authoritiesListURL =
-  'https://raw.githubusercontent.com/tripleblindmarket/safe-places/develop/healthcare-authorities.yaml';
-
-const width = Dimensions.get('window').width;
-import languages from './../locales/languages';
-import ButtonWrapper from '../components/ButtonWrapper';
-import NavigationBarWrapper from '../components/NavigationBarWrapper';
-import Colors from '../constants/colors';
-import fontFamily from './../constants/fonts';
-import warning from './../assets/svgs/warning';
-import googleMapsIcon from './../assets/svgs/google-maps-logo';
-import { SvgXml } from 'react-native-svg';
+// const authoritiesListURL =
+// ('https://raw.githubusercontent.com/tripleblindmarket/safe-places/develop/healthcare-authorities.yaml');
 
 class SettingsScreen extends Component {
   constructor(props) {
@@ -85,14 +74,10 @@ class SettingsScreen extends Component {
         <View style={styles.section}>
           <View style={styles.iconRowContainer}>
             <SvgXml xml={googleMapsIcon} style={{ alignSelf: 'center' }} />
-            <Text style={styles.iconRowText}>
-              {languages.t('label.maps_import_title')}
-            </Text>
+            <Text style={styles.iconRowText}>{languages.t('label.maps_import_title')}</Text>
           </View>
           <View style={styles.sectionRowContainer}>
-            <Text style={styles.settingRowText}>
-              {languages.t('label.maps_import_text')}
-            </Text>
+            <Text style={styles.settingRowText}>{languages.t('label.maps_import_text')}</Text>
           </View>
           <ButtonWrapper
             title={languages.t('label.maps_import_button_text')}
@@ -100,7 +85,7 @@ class SettingsScreen extends Component {
             buttonColor={Colors.VIOLET}
             bgColor={Colors.WHITE}
             borderColor={Colors.VIOLET}
-            buttonWidth={'100%'}
+            buttonWidth='100%'
           />
           <View style={styles.sectionRowContainer}>
             <Text style={styles.settingRowNoteText}>
@@ -118,9 +103,7 @@ class SettingsScreen extends Component {
     };
     return (
       <>
-        <TouchableOpacity
-          onPress={actionListener.bind(this)}
-          style={styles.sectionRowContainer}>
+        <TouchableOpacity onPress={actionListener.bind(this)} style={styles.sectionRowContainer}>
           {subtitle ? (
             <Text
               style={[
@@ -133,18 +116,12 @@ class SettingsScreen extends Component {
               {text}
             </Text>
           ) : (
-            <Text
-              style={[
-                styles.settingRowText,
-                { color: color || Colors.VIOLET_TEXT },
-              ]}>
+            <Text style={[styles.settingRowText, { color: color || Colors.VIOLET_TEXT }]}>
               {text}
             </Text>
           )}
           {renderIcon()}
-          {subtitle ? (
-            <Text style={styles.settingsRowSubtitleText}>{subtitle}</Text>
-          ) : null}
+          {subtitle ? <Text style={styles.settingsRowSubtitleText}>{subtitle}</Text> : null}
         </TouchableOpacity>
       </>
     );
@@ -175,7 +152,7 @@ class SettingsScreen extends Component {
                 null,
                 languages.t('label.choose_provider_subtitle'),
               )}
-              <View style={styles.divider}></View>
+              <View style={styles.divider} />
               {this.getSettingRow(
                 languages.t('label.news_title'),
                 this.newsButtonPressed,
@@ -183,7 +160,7 @@ class SettingsScreen extends Component {
                 null,
                 languages.t('label.news_subtitle'),
               )}
-              <View style={styles.divider}></View>
+              <View style={styles.divider} />
               {this.getSettingRow(
                 languages.t('label.event_history_title'),
                 this.eventHistoryButtonPressed,
@@ -191,7 +168,7 @@ class SettingsScreen extends Component {
                 null,
                 languages.t('label.event_history_subtitle'),
               )}
-              <View style={styles.divider}></View>
+              <View style={styles.divider} />
               {this.getSettingRow(
                 languages.t('label.tested_positive_title'),
                 this.testedPositiveButtonPressed,
@@ -208,11 +185,8 @@ class SettingsScreen extends Component {
           <View style={styles.fullDivider} />
           <View style={styles.mainContainer}>
             <View style={styles.section}>
-              {this.getSettingRow(
-                languages.t('label.about_title'),
-                this.aboutButtonPressed,
-              )}
-              <View style={styles.divider}></View>
+              {this.getSettingRow(languages.t('label.about_title'), this.aboutButtonPressed)}
+              <View style={styles.divider} />
               {this.getSettingRow(
                 languages.t('label.legal_page_title'),
                 this.licensesButtonPressed,

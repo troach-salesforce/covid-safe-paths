@@ -1,54 +1,41 @@
+/* eslint-disable react/no-unused-state */
+
+import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
 import React, { Component } from 'react';
 import {
   AppState,
-  SafeAreaView,
-  StyleSheet,
-  Linking,
-  View,
-  Text,
-  TouchableOpacity,
+  BackHandler,
   Dimensions,
   Image,
-  ScrollView,
-  BackHandler,
   ImageBackground,
+  Linking,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {
-  Menu,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from 'react-native-popup-menu';
-import BackgroundImage from './../assets/images/launchScreenBackground.png';
-import BackgroundImageAtRisk from './../assets/images/backgroundAtRisk.png';
-import Colors from '../constants/colors';
-import LocationServices from '../services/LocationService';
-//import BroadcastingServices from '../services/BroadcastingService';
-import BackgroundGeolocation from '@mauron85/react-native-background-geolocation';
-import PushNotification from 'react-native-push-notification';
-import exportImage from './../assets/images/export.png';
-import ButtonWrapper from '../components/ButtonWrapper';
-import { isPlatformiOS } from './../Util';
+import { check, openSettings, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import Pulse from 'react-native-pulse';
-import {
-  check,
-  PERMISSIONS,
-  RESULTS,
-  openSettings,
-} from 'react-native-permissions';
-import foreArrow from './../assets/images/foreArrow.png';
-
-import { IntersectSet } from '../helpers/Intersect';
-import { GetStoreData, SetStoreData } from '../helpers/General';
-import languages from '../locales/languages';
-
+import PushNotification from 'react-native-push-notification';
 import { SvgXml } from 'react-native-svg';
-import StateAtRisk from './../assets/svgs/stateAtRisk';
-import StateNoContact from './../assets/svgs/stateNoContact';
-import StateUnknown from './../assets/svgs/stateUnknown';
-import SettingsGear from './../assets/svgs/settingsGear';
+import BackgroundImageAtRisk from '../assets/images/backgroundAtRisk.png';
+// import BroadcastingServices from '../services/BroadcastingService';
+import exportImage from '../assets/images/export.png';
+import foreArrow from '../assets/images/foreArrow.png';
+import BackgroundImage from '../assets/images/launchScreenBackground.png';
+import SettingsGear from '../assets/svgs/settingsGear';
+import StateAtRisk from '../assets/svgs/stateAtRisk';
+import StateNoContact from '../assets/svgs/stateNoContact';
+import StateUnknown from '../assets/svgs/stateUnknown';
+import ButtonWrapper from '../components/ButtonWrapper';
+import Colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
+import { GetStoreData, SetStoreData } from '../helpers/General';
+import { IntersectSet } from '../helpers/Intersect';
+import languages from '../locales/languages';
+import LocationServices from '../services/LocationService';
+import { isPlatformiOS } from '../Util';
 
 const StateEnum = {
   UNKNOWN: 0,
@@ -56,7 +43,7 @@ const StateEnum = {
   NO_CONTACT: 2,
 };
 
-const StateIcon = ({ title, status, size, ...props }) => {
+const StateIcon = ({ status, size }) => {
   let icon;
   switch (status) {
     case StateEnum.UNKNOWN:
@@ -68,10 +55,10 @@ const StateIcon = ({ title, status, size, ...props }) => {
     case StateEnum.NO_CONTACT:
       icon = StateNoContact;
       break;
+    default:
+      break;
   }
-  return (
-    <SvgXml xml={icon} width={size ? size : 80} height={size ? size : 80} />
-  );
+  return <SvgXml xml={icon} width={size || 80} height={size || 80} />;
 };
 
 const width = Dimensions.get('window').width;
@@ -84,7 +71,7 @@ class LocationTracking extends Component {
     this.state = {
       appState: AppState.currentState,
       timer_intersect: null,
-      isLogging: '',
+      isLogging: false,
       currentState: StateEnum.NO_CONTACT,
     };
     try {
@@ -107,9 +94,8 @@ class LocationTracking extends Component {
     } else {
       locationPermission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
     }
-    let locationDisabled = true;
     check(locationPermission)
-      .then(result => {
+      .then((result) => {
         switch (result) {
           case RESULTS.GRANTED:
             LocationServices.start();
@@ -120,10 +106,13 @@ class LocationTracking extends Component {
             console.log('NO LOCATION');
             LocationServices.stop();
             this.setState({ currentState: StateEnum.UNKNOWN });
+            break;
+          default:
+            break;
         }
       })
-      .catch(error => {
-        console.log('error checking location: ' + error);
+      .catch((error) => {
+        console.log(`error checking location: ${error}`);
       });
   }
 
@@ -131,7 +120,7 @@ class LocationTracking extends Component {
     // already set on 12h timer, but run when this screen opens too
     this.intersect_tick();
 
-    GetStoreData('CROSSED_PATHS').then(dayBin => {
+    GetStoreData('CROSSED_PATHS').then((dayBin) => {
       if (dayBin === null) {
         console.log("Can't find crossed paths");
         this.setState({ currentState: StateEnum.NO_CONTACT });
@@ -147,7 +136,7 @@ class LocationTracking extends Component {
     AppState.addEventListener('change', this._handleAppStateChange);
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     GetStoreData('PARTICIPATE')
-      .then(isParticipating => {
+      .then((isParticipating) => {
         if (isParticipating === 'true') {
           this.setState({
             isLogging: true,
@@ -159,17 +148,18 @@ class LocationTracking extends Component {
           });
         }
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
 
-    let timer_intersect = setInterval(this.intersect_tick, 1000 * 60 * 60 * 12); // once every 12 hours
+    const timer_intersect = setInterval(this.intersect_tick, 1000 * 60 * 60 * 12); // once every 12 hours
     // DEBUG:  1000 * 10); // once every 10 seconds
 
+    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({
       timer_intersect,
     });
   }
 
-  findNewAuthorities() {
+  findNewAuthorities = () => {
     // TODO: This should pull down the Healtcare Authorities list (see Settings.js)
     // Then it should look at the GPS extent box of each authority and (if any
     // of the GPS coordinates change) pop-up a notification that is basically:
@@ -177,7 +167,7 @@ class LocationTracking extends Component {
     //    been.
     // Tapping that notification asks if they want to Add that Healthcare Authority
     // under the Settings screen.
-  }
+  };
 
   intersect_tick = () => {
     // This function is called once every 12 hours.  It should do several things:
@@ -186,7 +176,7 @@ class LocationTracking extends Component {
 
     // Get the user's health authorities
     GetStoreData('HEALTH_AUTHORITIES')
-      .then(authority_list => {
+      .then((authority_list) => {
         if (!authority_list) {
           // DEBUG: Force a test list
           // authority_list = [
@@ -195,18 +185,18 @@ class LocationTracking extends Component {
           //    url:
           //      'https://raw.githack.com/tripleblindmarket/safe-places/develop/examples/safe-paths.json',
           //  },
-          //];
+          // ];
           return;
         }
 
-        let name_news = [];
+        const name_news = [];
 
         if (authority_list) {
           // Pull down data from all the registered health authorities
-          for (let authority of authority_list) {
+          for (const authority of authority_list) {
             fetch(authority.url)
-              .then(response => response.json())
-              .then(responseJson => {
+              .then((response) => response.json())
+              .then((responseJson) => {
                 // Example response =
                 // { "authority_name":  "Steve's Fake Testing Organization",
                 //   "publish_date_utc": "1584924583",
@@ -229,7 +219,7 @@ class LocationTracking extends Component {
                 // TODO: Look at "publish_date_utc".  We should notify users if
                 //       their authority is no longer functioning.)
 
-                IntersectSet(responseJson.concern_points, dayBin => {
+                IntersectSet(responseJson.concern_points, (dayBin) => {
                   if (dayBin !== null) {
                     PushNotification.localNotification({
                       title: languages.t('label.push_at_risk_title'),
@@ -245,16 +235,13 @@ class LocationTracking extends Component {
                 //       news to make it snappy?  Could be a problem in some
                 //       locales with high data costs.
               })
-              .catch(error =>
-                console.log('Failed to save authority/news URL list'),
-              );
+              .catch(() => console.log('Failed to save authority/news URL list'));
           }
         } else {
           console.log('No authority list');
-          return;
         }
       })
-      .catch(error => console.log('Failed to load authority list', error));
+      .catch((error) => console.log('Failed to load authority list', error));
   };
 
   componentWillUnmount() {
@@ -265,11 +252,8 @@ class LocationTracking extends Component {
 
   // need to check state again if new foreground event
   // e.g. if user changed location permission
-  _handleAppStateChange = nextAppState => {
-    if (
-      this.state.appState.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
+  _handleAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       console.log('checkIfLocationDisabled');
       this.checkCurrentState();
     }
@@ -296,7 +280,7 @@ class LocationTracking extends Component {
   willParticipate = () => {
     SetStoreData('PARTICIPATE', 'true').then(() => {
       // Turn off bluetooth for v1
-      //BroadcastingServices.start();
+      // BroadcastingServices.start();
     });
     // Check and see if they actually authorized in the system dialog.
     // If not, stop services and set the state to !isLogging
@@ -310,7 +294,7 @@ class LocationTracking extends Component {
       } else if (authorization === BackgroundGeolocation.NOT_AUTHORIZED) {
         LocationServices.stop();
         // Turn of bluetooth for v1
-        //BroadcastingServices.stop(this.props.navigation);
+        // BroadcastingServices.stop(this.props.navigation);
         this.setState({
           isLogging: false,
         });
@@ -337,7 +321,7 @@ class LocationTracking extends Component {
   setOptOut = () => {
     LocationServices.stop(this.props.navigation);
     // Turn of bluetooth for v1
-    //BroadcastingServices.stop(this.props.navigation);
+    // BroadcastingServices.stop(this.props.navigation);
     this.setState({
       isLogging: false,
     });
@@ -372,19 +356,14 @@ class LocationTracking extends Component {
           //     break;
           // }
         }}>
-        <Image resizeMode={'contain'} />
-        <SvgXml
-          style={styles.stateIcon}
-          xml={SettingsGear}
-          width={32}
-          height={32}
-        />
+        <Image resizeMode='contain' />
+        <SvgXml style={styles.stateIcon} xml={SettingsGear} width={32} height={32} />
       </TouchableOpacity>
     );
   }
 
   getPulseIfNeeded() {
-    if (this.state.currentState == StateEnum.NO_CONTACT) {
+    if (this.state.currentState === StateEnum.NO_CONTACT) {
       return (
         <View style={styles.pulseContainer}>
           <Pulse
@@ -411,22 +390,14 @@ class LocationTracking extends Component {
     switch (this.state.currentState) {
       case StateEnum.NO_CONTACT:
         return (
-          <Text style={styles.mainTextBelow}>
-            {languages.t('label.home_no_contact_header')}
-          </Text>
+          <Text style={styles.mainTextBelow}>{languages.t('label.home_no_contact_header')}</Text>
         );
       case StateEnum.AT_RISK:
-        return (
-          <Text style={styles.mainTextAbove}>
-            {languages.t('label.home_at_risk_header')}
-          </Text>
-        );
+        return <Text style={styles.mainTextAbove}>{languages.t('label.home_at_risk_header')}</Text>;
       case StateEnum.UNKNOWN:
-        return (
-          <Text style={styles.mainTextBelow}>
-            {languages.t('label.home_unknown_header')}
-          </Text>
-        );
+        return <Text style={styles.mainTextBelow}>{languages.t('label.home_unknown_header')}</Text>;
+      default:
+        return null;
     }
   }
 
@@ -438,8 +409,11 @@ class LocationTracking extends Component {
         return languages.t('label.home_at_risk_subtext');
       case StateEnum.UNKNOWN:
         return languages.t('label.home_unknown_subtext');
+      default:
+        return '';
     }
   }
+
   getSubSubText() {
     switch (this.state.currentState) {
       case StateEnum.NO_CONTACT:
@@ -447,6 +421,8 @@ class LocationTracking extends Component {
       case StateEnum.AT_RISK:
         return languages.t('label.home_at_risk_subsubtext');
       case StateEnum.UNKNOWN:
+        return null;
+      default:
         return null;
     }
   }
@@ -460,8 +436,9 @@ class LocationTracking extends Component {
       // buttonFunction = () => {
       //   this.props.navigation.navigate('MapLocation');
       // };
-      return;
-    } else if (this.state.currentState === StateEnum.AT_RISK) {
+      return null;
+    }
+    if (this.state.currentState === StateEnum.AT_RISK) {
       buttonLabel = languages.t('label.home_next_steps');
       buttonFunction = () => {
         this.props.navigation.navigate('NotificationScreen');
@@ -486,20 +463,14 @@ class LocationTracking extends Component {
     );
   }
 
-  getMayoInfoPressed() {
+  getMayoInfoPressed = () => {
     Linking.openURL(languages.t('label.home_mayo_link_URL'));
-  }
+  };
 
   render() {
     return (
-      <ImageBackground
-        source={this.getBackground()}
-        style={styles.backgroundImage}>
-        <StatusBar
-          barStyle='light-content'
-          backgroundColor='transparent'
-          translucent={true}
-        />
+      <ImageBackground source={this.getBackground()} style={styles.backgroundImage}>
+        <StatusBar barStyle='light-content' backgroundColor='transparent' translucent />
         {this.getPulseIfNeeded()}
         <View style={styles.mainContainer}>
           <View style={styles.contentContainer}>
@@ -510,22 +481,16 @@ class LocationTracking extends Component {
           </View>
         </View>
         <View>
-          <TouchableOpacity
-            onPress={this.getMayoInfoPressed.bind(this)}
-            style={styles.mayoInfoRow}>
+          <TouchableOpacity onPress={this.getMayoInfoPressed.bind(this)} style={styles.mayoInfoRow}>
             <View style={styles.mayoInfoContainer}>
               <Text
                 style={styles.mainMayoHeader}
-                onPress={() =>
-                  Linking.openURL(languages.t('label.home_mayo_link_URL'))
-                }>
+                onPress={() => Linking.openURL(languages.t('label.home_mayo_link_URL'))}>
                 {languages.t('label.home_mayo_link_heading')}
               </Text>
               <Text
                 style={styles.mainMayoSubtext}
-                onPress={() =>
-                  Linking.openURL(languages.t('label.home_mayo_link_URL'))
-                }>
+                onPress={() => Linking.openURL(languages.t('label.home_mayo_link_URL'))}>
                 {languages.t('label.home_mayo_link_label')}
               </Text>
             </View>

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import colors from '../constants/colors';
+import { StyleSheet, Text, TouchableOpacity, ViewPropTypes } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
+import colors from '../constants/colors';
 
 class Button extends React.Component {
   render() {
@@ -23,22 +23,19 @@ class Button extends React.Component {
         end={{ x: 1, y: 0 }}
         colors={[bgColor, toBgColor]}
         style={[
-          buttonStyle ? buttonStyle : styles.container,
+          buttonStyle || styles.container,
           {
             height: buttonHeight,
             borderWidth: borderColor ? 2 : 0,
-            borderColor: borderColor,
+            borderColor,
           },
         ]}>
         <TouchableOpacity
-          style={[
-            buttonStyle ? buttonStyle : styles.container,
-            { height: buttonHeight },
-          ]}
+          style={[buttonStyle || styles.container, { height: buttonHeight }]}
           onPress={onPress}>
           <Text
             style={[
-              titleStyle ? titleStyle : styles.text,
+              titleStyle || styles.text,
               {
                 color: buttonColor,
               },
@@ -72,8 +69,9 @@ Button.propTypes = {
   buttonColor: PropTypes.string,
   bgColor: PropTypes.string,
   toBgColor: PropTypes.string,
-  titleStyle: PropTypes.object,
-  buttonStyle: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  titleStyle: PropTypes.any,
+  buttonStyle: ViewPropTypes.style,
   borderColor: PropTypes.string,
 };
 

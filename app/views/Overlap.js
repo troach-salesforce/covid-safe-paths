@@ -1,35 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  BackHandler,
+  Image,
+  Linking,
   SafeAreaView,
   StyleSheet,
-  ScrollView,
-  Linking,
-  View,
   Text,
-  Image,
-  Dimensions,
   TouchableOpacity,
-  BackHandler,
+  View,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import WebView from 'react-native-webview';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import RNFetchBlob from 'rn-fetch-blob';
-import Share from 'react-native-share';
-import colors from '../constants/colors';
-import Button from '../components/Button';
-import { GetStoreData } from '../helpers/General';
-import { convertPointsToString } from '../helpers/convertPointsToString';
-import LocationServices from '../services/LocationService';
-import greenMarker from '../assets/images/user-green.png';
 import backArrow from '../assets/images/backArrow.png';
-import languages from '../locales/languages';
-import CustomCircle from '../helpers/customCircle';
+import greenMarker from '../assets/images/user-green.png';
+import Colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
+import CustomCircle from '../helpers/customCircle';
+import { GetStoreData } from '../helpers/General';
+import languages from '../locales/languages';
 
-const width = Dimensions.get('window').width;
-
-const base64 = RNFetchBlob.base64;
 // This data source was published in the Lancet, originally mentioned in
 // this article:
 //    https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(20)30119-5/fulltext
@@ -39,12 +29,8 @@ const base64 = RNFetchBlob.base64;
 const public_data =
   'https://raw.githubusercontent.com/beoutbreakprepared/nCoV2019/master/latest_data/latestdata.csv';
 const show_button_text = languages.t('label.show_overlap');
-const overlap_true_button_text = languages.t(
-  'label.overlap_found_button_label',
-);
-const no_overlap_button_text = languages.t(
-  'label.overlap_no_results_button_label',
-);
+const overlap_true_button_text = languages.t('label.overlap_found_button_label');
+const no_overlap_button_text = languages.t('label.overlap_no_results_button_label');
 const INITIAL_REGION = {
   latitude: 36.56,
   longitude: 20.39,
@@ -53,28 +39,26 @@ const INITIAL_REGION = {
 };
 
 function distance(lat1, lon1, lat2, lon2) {
-  if (lat1 == lat2 && lon1 == lon2) {
+  if (lat1 === lat2 && lon1 === lon2) {
     return 0;
-  } else {
-    var radlat1 = (Math.PI * lat1) / 180;
-    var radlat2 = (Math.PI * lat2) / 180;
-    var theta = lon1 - lon2;
-    var radtheta = (Math.PI * theta) / 180;
-    var dist =
-      Math.sin(radlat1) * Math.sin(radlat2) +
-      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-    if (dist > 1) {
-      dist = 1;
-    }
-    dist = Math.acos(dist);
-    dist = (dist * 180) / Math.PI;
-    dist = dist * 60 * 1.1515;
-    return dist * 1.609344;
   }
+  const radlat1 = (Math.PI * lat1) / 180;
+  const radlat2 = (Math.PI * lat2) / 180;
+  const theta = lon1 - lon2;
+  const radtheta = (Math.PI * theta) / 180;
+  let dist =
+    Math.sin(radlat1) * Math.sin(radlat2) +
+    Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+  if (dist > 1) {
+    dist = 1;
+  }
+  dist = Math.acos(dist);
+  dist = (dist * 180) / Math.PI;
+  dist = dist * 60 * 1.1515;
+  return dist * 1.609344;
 }
 
-function OverlapScreen() {
-  const [region, setRegion] = useState({});
+function OverlapScreen(props) {
   const [markers, setMarkers] = useState([]);
   const [circles, setCircles] = useState([]);
   const [showButton, setShowButton] = useState({
@@ -82,27 +66,18 @@ function OverlapScreen() {
     text: show_button_text,
   });
   const [initialRegion, setInitialRegion] = useState(INITIAL_REGION);
-  const { navigate } = useNavigation();
   const mapView = useRef();
 
-  async function getOverlap() {
-    try {
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
   async function populateMarkers() {
-    GetStoreData('LOCATION_DATA').then(locationArrayString => {
-      var locationArray = JSON.parse(locationArrayString);
+    GetStoreData('LOCATION_DATA').then((locationArrayString) => {
+      const locationArray = JSON.parse(locationArrayString);
       if (locationArray !== null) {
-        var markers = [];
-        var previousMarkers = {};
-        for (var i = 0; i < locationArray.length - 1; i += 1) {
+        const previousMarkers = {};
+        for (let i = 0; i < locationArray.length - 1; i += 1) {
           const coord = locationArray[i];
-          const lat = coord['latitude'];
-          const long = coord['longitude'];
-          const key = String(lat) + '|' + String(long);
+          const lat = coord.latitude;
+          const long = coord.longitude;
+          const key = `${String(lat)}|${String(long)}`;
           if (key in previousMarkers) {
             previousMarkers[key] += 1;
           } else {
@@ -125,13 +100,12 @@ function OverlapScreen() {
 
   async function getInitialState() {
     try {
-      GetStoreData('LOCATION_DATA').then(locationArrayString => {
+      GetStoreData('LOCATION_DATA').then((locationArrayString) => {
         const locationArray = JSON.parse(locationArrayString);
         if (locationArray !== null) {
           const { latitude, longitude } = locationArray.slice(-1)[0];
 
-          mapView.current &&
-            mapView.current.animateCamera({ center: { latitude, longitude } });
+          mapView.current && mapView.current.animateCamera({ center: { latitude, longitude } });
           setInitialRegion({
             latitude,
             longitude,
@@ -169,16 +143,16 @@ function OverlapScreen() {
         fileCache: true,
       })
         .fetch('GET', public_data, {})
-        .then(res => {
+        .then((res) => {
           // the temp file path
           console.log('The file saved to ', res.path());
           try {
             RNFetchBlob.fs
               .readFile(res.path(), 'utf8')
-              .then(records => {
+              .then((records) => {
                 // delete the file first using flush
                 res.flush();
-                parseCSV(records).then(parsedRecords => {
+                parseCSV(records).then((parsedRecords) => {
                   console.log(parsedRecords);
                   console.log(Object.keys(parsedRecords).length);
                   plotCircles(parsedRecords).then(() => {
@@ -198,7 +172,7 @@ function OverlapScreen() {
                   });
                 });
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error('got error: ', e);
               });
           } catch (err) {
@@ -212,40 +186,36 @@ function OverlapScreen() {
 
   async function parseCSV(records) {
     try {
-      const latestLat = initialRegion.latitude;
-      const latestLong = initialRegion.longitude;
       const rows = records.split('\n');
       const parsedRows = {};
 
-      for (var i = rows.length - 1; i >= 0; i--) {
-        var row = rows[i].split(',');
+      for (let i = rows.length - 1; i >= 0; i--) {
+        const row = rows[i].split(',');
         const lat = parseFloat(row[7]);
         const long = parseFloat(row[8]);
         if (!isNaN(lat) && !isNaN(long)) {
-          if (true) {
-            var key = String(lat) + '|' + String(long);
-            if (!(key in parsedRows)) {
-              parsedRows[key] = 0;
-            }
-            parsedRows[key] += 1;
+          const key = `${String(lat)}|${String(long)}`;
+          if (!(key in parsedRows)) {
+            parsedRows[key] = 0;
           }
+          parsedRows[key] += 1;
         }
       }
       return parsedRows;
     } catch (e) {
       console.log(e);
+      return null;
     }
   }
 
-  plotCircles = async records => {
+  async function plotCircles(records) {
     try {
-      const circles = [];
-      const distThreshold = 2000; //In KMs
+      const distThreshold = 2000; // In KMs
       const latestLat = initialRegion.latitude;
       const latestLong = initialRegion.longitude;
       let index = 0;
 
-      for (const key in records) {
+      Object.keys(records).forEach((key) => {
         const latitude = parseFloat(key.split('|')[0]);
         const longitude = parseFloat(key.split('|')[1]);
         const count = records[key];
@@ -257,28 +227,29 @@ function OverlapScreen() {
           const circle = {
             key: `${index}-${latitude}-${longitude}-${count}`,
             center: {
-              latitude: latitude,
-              longitude: longitude,
+              latitude,
+              longitude,
             },
             radius: 50 * count,
           };
           circles.push(circle);
         }
         index += 1;
-      }
+      });
+
       console.log(circles.length, 'points found');
       setCircles(circles);
     } catch (e) {
       console.log(e);
     }
-  };
+  }
 
   function backToMain() {
-    this.props.navigation.goBack();
+    props.navigation.goBack();
   }
 
   function handleBackPress() {
-    this.props.navigation.goBack();
+    props.navigation.goBack();
     return true;
   }
 
@@ -291,8 +262,10 @@ function OverlapScreen() {
   );
 
   useEffect(() => {
+    if (typeof BackHandler.addEventListener !== 'function') return () => {};
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
     return function cleanup() {
+      if (typeof BackHandler.removeEventListener !== 'function') return;
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
     };
   });
@@ -303,14 +276,10 @@ function OverlapScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backArrowTouchable}
-          onPress={backToMain}>
+        <TouchableOpacity style={styles.backArrowTouchable} onPress={backToMain}>
           <Image style={styles.backArrow} source={backArrow} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {languages.t('label.overlap_title')}
-        </Text>
+        <Text style={styles.headerTitle}>{languages.t('label.overlap_title')}</Text>
       </View>
       <MapView
         ref={mapView}
@@ -318,7 +287,7 @@ function OverlapScreen() {
         style={styles.map}
         initialRegion={initialRegion}
         customMapStyle={customMapStyles}>
-        {markers.map(marker => (
+        {markers.map((marker) => (
           <Marker
             key={marker.key}
             coordinate={marker.coordinate}
@@ -328,7 +297,7 @@ function OverlapScreen() {
             image={greenMarker}
           />
         ))}
-        {circles.map(circle => (
+        {circles.map((circle) => (
           <CustomCircle
             key={circle.key}
             center={circle.center}
@@ -347,19 +316,15 @@ function OverlapScreen() {
           {/* If no overlap found, change button text to say so. Temporary solution, replace with something more robust */}
           <Text style={styles.buttonText}>{languages.t(showButton.text)}</Text>
         </TouchableOpacity>
-        <Text style={styles.sectionDescription}>
-          {languages.t('label.overlap_para_1')}
-        </Text>
+        <Text style={styles.sectionDescription}>{languages.t('label.overlap_para_1')}</Text>
       </View>
       <View style={styles.footer}>
         <Text
           style={[
             styles.sectionFooter,
-            { textAlign: 'center', paddingTop: 15, color: 'blue' },
+            { textAlign: 'center', paddingTop: 15, color: Colors.BLUE_LINK },
           ]}
-          onPress={() =>
-            Linking.openURL('https://github.com/beoutbreakprepared/nCoV2019')
-          }>
+          onPress={() => Linking.openURL('https://github.com/beoutbreakprepared/nCoV2019')}>
           {languages.t('label.nCoV2019_url_info')}{' '}
         </Text>
       </View>
@@ -372,18 +337,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    color: colors.PRIMARY_TEXT,
-    backgroundColor: colors.WHITE,
+    color: Colors.PRIMARY_TEXT,
+    backgroundColor: Colors.WHITE,
   },
   headerTitle: {
     fontSize: 24,
     fontFamily: fontFamily.primaryRegular,
-  },
-  subHeaderTitle: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 22,
-    padding: 5,
   },
   main: {
     flex: 1,
@@ -400,45 +359,6 @@ const styles = StyleSheet.create({
     padding: 15,
     width: '96%',
     alignSelf: 'center',
-  },
-  buttonTouchable: {
-    borderRadius: 12,
-    backgroundColor: '#665eff',
-    height: 52,
-    alignSelf: 'center',
-    width: width * 0.7866,
-    marginTop: 15,
-    justifyContent: 'center',
-  },
-  buttonText: {
-    fontFamily: fontFamily.primaryRegular,
-    fontSize: 14,
-    lineHeight: 19,
-    letterSpacing: 0,
-    textAlign: 'center',
-    color: '#ffffff',
-  },
-  mainText: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: '400',
-    textAlignVertical: 'center',
-    padding: 20,
-  },
-  smallText: {
-    fontSize: 10,
-    lineHeight: 24,
-    fontWeight: '400',
-    textAlignVertical: 'center',
-    padding: 20,
-  },
-
-  headerContainer: {
-    flexDirection: 'row',
-    height: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(189, 195, 199,0.6)',
-    alignItems: 'center',
   },
   backArrowTouchable: {
     width: 60,

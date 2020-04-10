@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, ScrollView, BackHandler } from 'react-native';
 
-import languages from './../locales/languages';
-import { isPlatformiOS } from './../Util';
-import Colors from '../constants/colors';
-import fontFamily from './../constants/fonts';
-import team from './../assets/svgs/team';
-import NavigationBarWrapper from '../components/NavigationBarWrapper';
 import { SvgXml } from 'react-native-svg';
+import languages from '../locales/languages';
+import Colors from '../constants/colors';
+import fontFamily from '../constants/fonts';
+import team from '../assets/svgs/team';
+import NavigationBarWrapper from '../components/NavigationBarWrapper';
 import lock from '../assets/svgs/lock';
 
 class AboutScreen extends Component {
@@ -46,20 +45,12 @@ class AboutScreen extends Component {
           <View style={styles.spacer} />
 
           <SvgXml style={styles.aboutSectionIconLock} xml={lock} />
-          <Text style={styles.aboutSectionTitles}>
-            {languages.t('label.commitment')}
-          </Text>
-          <Text style={styles.aboutSectionPara}>
-            {languages.t('label.commitment_para')}
-          </Text>
+          <Text style={styles.aboutSectionTitles}>{languages.t('label.commitment')}</Text>
+          <Text style={styles.aboutSectionPara}>{languages.t('label.commitment_para')}</Text>
 
           <SvgXml style={styles.aboutSectionIconTeam} xml={team} />
-          <Text style={styles.aboutSectionTitles}>
-            {languages.t('label.team')}
-          </Text>
-          <Text style={styles.aboutSectionPara}>
-            {languages.t('label.team_para')}
-          </Text>
+          <Text style={styles.aboutSectionTitles}>{languages.t('label.team')}</Text>
+          <Text style={styles.aboutSectionPara}>{languages.t('label.team_para')}</Text>
         </ScrollView>
       </NavigationBarWrapper>
     );
@@ -73,12 +64,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.INTRO_WHITE_BG,
     paddingHorizontal: 26,
     flex: 1,
-  },
-  section: {
-    flexDirection: 'column',
-    width: '87.5%',
-    alignSelf: 'center',
-    backgroundColor: Colors.WHITE,
   },
   aboutSectionIconTeam: {
     width: 40.38,
@@ -103,15 +88,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     alignSelf: 'center',
     fontFamily: fontFamily.primaryRegular,
-  },
-  divider: {
-    backgroundColor: Colors.DIVIDER,
-    height: 1.5,
-  },
-  fullDivider: {
-    backgroundColor: Colors.DIVIDER,
-    height: 1,
-    width: '100%',
   },
   spacer: {
     marginVertical: '2%',

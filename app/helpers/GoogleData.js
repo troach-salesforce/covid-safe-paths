@@ -1,25 +1,25 @@
 /**
  * Import a Google JSon into the Database.
  */
-import { GetStoreData, SetStoreData } from '../helpers/General';
+import { GetStoreData, SetStoreData } from './General';
 
 function BuildLocalFormat(placeVisit) {
-  return (loc = {
+  return {
     latitude: placeVisit.location.latitudeE7 * 10 ** -7,
     longitude: placeVisit.location.longitudeE7 * 10 ** -7,
     time: placeVisit.duration.startTimestampMs,
-  });
+  };
 }
 
 function LocationExists(localDataJSON, loc) {
   let wasImportedBefore = false;
 
   for (let index = 0; index < localDataJSON.length; ++index) {
-    let storedLoc = localDataJSON[index];
+    const storedLoc = localDataJSON[index];
     if (
-      storedLoc.latitude == loc.latitude &&
-      storedLoc.longitude == loc.longitude &&
-      storedLoc.time == loc.time
+      storedLoc.latitude === loc.latitude &&
+      storedLoc.longitude === loc.longitude &&
+      storedLoc.time === loc.time
     ) {
       wasImportedBefore = true;
       break;
@@ -39,30 +39,23 @@ function InsertIfNew(localDataJSON, loc) {
 }
 
 function Merge(localDataJSON, googleDataJSON) {
-  googleDataJSON.timelineObjects.map(function(
-    data,
-    //index
-  ) {
-    // Only import visited places, not paths for now
-    if (data.placeVisit) {
-      let loc = BuildLocalFormat(data.placeVisit);
-      InsertIfNew(localDataJSON, loc);
-    }
-  });
+  googleDataJSON.timelineObjects.forEach(
+    (
+      data,
+      // index
+    ) => {
+      // Only import visited places, not paths for now
+      if (data.placeVisit) {
+        const loc = BuildLocalFormat(data.placeVisit);
+        InsertIfNew(localDataJSON, loc);
+      }
+    },
+  );
 }
 
 export async function MergeJSONWithLocalData(googleDataJSON) {
-  GetStoreData('LOCATION_DATA').then(locationArray => {
-    let locationData;
-
-    if (locationArray !== null) {
-      locationData = JSON.parse(locationArray);
-    } else {
-      locationData = [];
-    }
-
+  return GetStoreData('LOCATION_DATA', false).then((locationData = []) => {
     Merge(locationData, googleDataJSON);
-
     console.log('Saving on array');
     SetStoreData('LOCATION_DATA', locationData);
   });

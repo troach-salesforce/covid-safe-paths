@@ -1,18 +1,14 @@
-import LocationService, { LocationData } from '../LocationService';
 import * as General from '../../helpers/General';
+import { LocationData } from '../LocationService';
 
 function mockGetStoreData(data) {
   General.GetStoreData = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       process.nextTick(() =>
         resolve(data)
       );
     });
   };
-};
-
-function mockSetStoreData(name, data) {
-  return General.SetStoreData = jest.fn();
 };
 
 describe('LocationData class', () => {

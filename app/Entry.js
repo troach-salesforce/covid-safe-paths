@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  CardStyleInterpolators,
-} from '@react-navigation/stack';
-import { SafeAreaView } from 'react-native';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import LocationTracking from './views/LocationTracking';
 import NewsScreen from './views/News';
 import ExportScreen from './views/Export';
@@ -23,7 +19,7 @@ import Onboarding5 from './views/onboarding/Onboarding5';
 import AboutScreen from './views/About';
 import ChooseProviderScreen from './views/ChooseProvider';
 
-import { GetStoreData, SetStoreData } from './helpers/General';
+import { GetStoreData } from './helpers/General';
 
 const Stack = createStackNavigator();
 
@@ -37,13 +33,13 @@ class Entry extends Component {
 
   componentDidMount() {
     GetStoreData('PARTICIPATE')
-      .then(isParticipating => {
+      .then((isParticipating) => {
         console.log(isParticipating);
         this.setState({
           initialRouteName: isParticipating,
         });
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   }
 
   render() {
@@ -105,11 +101,7 @@ class Entry extends Component {
             component={LocationTracking}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name='NewsScreen'
-            component={NewsScreen}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name='NewsScreen' component={NewsScreen} options={{ headerShown: false }} />
           <Stack.Screen
             name='ExportScreen'
             component={ExportScreen}

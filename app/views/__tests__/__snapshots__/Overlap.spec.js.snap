@@ -12,17 +12,7 @@ exports[`renders correctly 1`] = `
     }
   }
 >
-  <View
-    style={
-      Object {
-        "alignItems": "center",
-        "borderBottomColor": "rgba(189, 195, 199,0.6)",
-        "borderBottomWidth": 1,
-        "flexDirection": "row",
-        "height": 60,
-      }
-    }
-  >
+  <View>
     <View
       accessible={true}
       focusable={true}
@@ -216,29 +206,11 @@ exports[`renders correctly 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "alignSelf": "center",
-          "backgroundColor": "#665eff",
-          "borderRadius": 12,
-          "height": 52,
-          "justifyContent": "center",
-          "marginTop": 15,
           "opacity": 1,
-          "width": 589.9499999999999,
         }
       }
     >
-      <Text
-        style={
-          Object {
-            "color": "#ffffff",
-            "fontFamily": "IBMPlexSans",
-            "fontSize": 14,
-            "letterSpacing": 0,
-            "lineHeight": 19,
-            "textAlign": "center",
-          }
-        }
-      >
+      <Text>
         Click to view the public dataset
       </Text>
     </View>
@@ -279,7 +251,7 @@ The light purple circles represent the public dataset
             "marginTop": 12,
           },
           Object {
-            "color": "blue",
+            "color": "#007AFF",
             "paddingTop": 15,
             "textAlign": "center",
           },

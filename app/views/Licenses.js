@@ -16,16 +16,12 @@ import packageJson from '../../package.json';
 
 import Colors from '../constants/colors';
 import fontFamily from '../constants/fonts';
-import languages from './../locales/languages';
-import licenses from './../assets/LICENSE.json';
+import languages from '../locales/languages';
+import licenses from '../assets/LICENSE.json';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
-import foreArrow from './../assets/images/foreArrow.png';
+import foreArrow from '../assets/images/foreArrow.png';
 
 class LicensesScreen extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   backToMain() {
     this.props.navigation.goBack();
   }
@@ -35,7 +31,7 @@ class LicensesScreen extends Component {
     return true;
   };
 
-  handleTermsOfUsePressed() {
+  static handleTermsOfUsePressed() {
     Linking.openURL(languages.t('label.terms_of_use_url'));
   }
 
@@ -47,16 +43,15 @@ class LicensesScreen extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
 
-  getLicenses() {
-    var result = '<html>';
-    result +=
-      '<style>  html, body { font-size: 40px; margin: 0; padding: 0; } </style>';
+  static getLicenses() {
+    let result = '<html>';
+    result += '<style>  html, body { font-size: 40px; margin: 0; padding: 0; } </style>';
     result += '<body>';
 
-    for (var i = 0; i < licenses.terms_and_licenses.length; i++) {
-      var element = licenses.terms_and_licenses[i];
+    for (let i = 0; i < licenses.terms_and_licenses.length; i++) {
+      const element = licenses.terms_and_licenses[i];
 
-      result += '<H2>' + element.name + '</H2><P>';
+      result += `<H2>${element.name}</H2><P>`;
       result += element.text.replace(/\n/g, '<br/>');
       result += '<hr/>';
     }
@@ -80,10 +75,10 @@ class LicensesScreen extends Component {
             <View style={styles.row}>
               <Text style={styles.valueSmall}>
                 OS:
-                {Platform.OS + ' v' + Platform.Version};
-                {Math.trunc(Dimensions.get('screen').width) +
-                  ' x ' +
-                  Math.trunc(Dimensions.get('screen').height)}
+                {`${Platform.OS} v${Platform.Version}`};
+                {`${Math.trunc(Dimensions.get('screen').width)} x ${Math.trunc(
+                  Dimensions.get('screen').height,
+                )}`}
               </Text>
             </View>
           </View>
@@ -95,7 +90,7 @@ class LicensesScreen extends Component {
             <WebView
               originWhitelist={['*']}
               source={{
-                html: this.getLicenses(),
+                html: LicensesScreen.getLicenses(),
               }}
               style={{
                 marginTop: 15,
@@ -105,14 +100,12 @@ class LicensesScreen extends Component {
           </View>
         </ScrollView>
         <TouchableOpacity
-          onPress={this.handleTermsOfUsePressed.bind(this)}
+          onPress={LicensesScreen.handleTermsOfUsePressed.bind(this)}
           style={styles.termsInfoRow}>
           <View style={styles.termsInfoContainer}>
             <Text
               style={styles.mainTermsHeader}
-              onPress={() =>
-                Linking.openURL(languages.t('label.terms_of_use_url'))
-              }>
+              onPress={() => Linking.openURL(languages.t('label.terms_of_use_url'))}>
               {languages.t('label.terms_of_use')}
             </Text>
           </View>

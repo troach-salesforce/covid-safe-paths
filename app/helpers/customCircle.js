@@ -11,6 +11,7 @@ function CustomCircle({ ...props }) {
     // call onLayout() from the props if you need it
   }
 
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return <Circle ref={ref} onLayout={onLayoutCircle} {...props} />;
 }
 
